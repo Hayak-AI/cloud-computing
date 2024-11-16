@@ -1,5 +1,3 @@
--- SQLBook: Code
--- Active: 1731565594709@@127.0.0.1@3306@hayak_db
 CREATE TABLE `users` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
   `name` VARCHAR(100),
@@ -8,15 +6,14 @@ CREATE TABLE `users` (
   `phone_number` VARCHAR(100),
   `password_hash` VARCHAR(100),
   `provider` ENUM('local','google') DEFAULT 'local',
-  `created_at` TIMESTAMP,
-  `updated_at` TIMESTAMP
+  `created_at` TIMESTAMP default now(),
+  `updated_at` TIMESTAMP default now()
 );
 
 CREATE TABLE `tokens` (
   `token_id` INT PRIMARY KEY,
   `token` VARCHAR(100),
-  `created_at` TIMESTAMP,
-  `expires_at` TIMESTAMP
+  `created_at` TIMESTAMP
 );
 
 CREATE TABLE `preferences` (
@@ -25,8 +22,8 @@ CREATE TABLE `preferences` (
   `voice_detection` BOOLEAN DEFAULT false,
   `dark_mode` BOOLEAN DEFAULT false,
   `location_tracking` BOOLEAN DEFAULT false,
-  `created_at` TIMESTAMP,
-  `updated_at` TIMESTAMP
+  `created_at` TIMESTAMP default now(),
+  `updated_at` TIMESTAMP default now()
 );
 
 CREATE TABLE `maps` (
@@ -34,7 +31,7 @@ CREATE TABLE `maps` (
   `location_name` varchar(255),
   `latitude` double,
   `longitude` double,
-  `created_at` timestamp
+  `created_at` timestamp default now()
 );
 
 CREATE TABLE `contacts` (
@@ -45,7 +42,7 @@ CREATE TABLE `contacts` (
   `contact_email` varchar(255),
   `message` varchar(100),
   `notify` boolean DEFAULT true,
-  `created_at` timestamp
+  `created_at` timestamp default now()
 );
 
 CREATE TABLE `reports` (
@@ -55,7 +52,7 @@ CREATE TABLE `reports` (
   `report_description` text,
   `evidence_url` varchar(255),
   `verified` boolean DEFAULT false,
-  `created_at` timestamp
+  `created_at` timestamp default now()
 );
 
 CREATE TABLE `notifications` (
@@ -72,8 +69,8 @@ CREATE TABLE `emergencies` (
   `user_id` INT,
   `location_id` INT,
   `emergency_status` ENUM('ongoing','resolved') DEFAULT 'ongoing',
-  `created_at` TIMESTAMP,
-  `updated_at` TIMESTAMP
+  `created_at` TIMESTAMP default now(),
+  `updated_at` TIMESTAMP default now()
 );
 
 CREATE TABLE `posts` (
@@ -82,8 +79,8 @@ CREATE TABLE `posts` (
   `title` VARCHAR(100),
   `content` TEXT,
   `category` ENUM('general','alert','information'),
-  `created_at` TIMESTAMP,
-  `updated_at` timestamp,
+  `created_at` TIMESTAMP default now(),
+  `updated_at` timestamp default now(),
   `location_id` INT
 );
 
@@ -93,7 +90,7 @@ CREATE TABLE `comments` (
   `report_id` INT,
   `user_id` INT,
   `content` TEXT,
-  `created_at` TIMESTAMP
+  `created_at` TIMESTAMP default now()
 );
 
 ALTER TABLE `preferences` ADD FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
