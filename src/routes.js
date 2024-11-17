@@ -5,7 +5,7 @@ const { loginHandler } = require('./auth/loginhandler');
 const { uploadProfilePhotoHandler } = require('./user/handler');
 const { updateUserHandler } = require('./user/handlerupdate');
 const { getProfileHandler } = require('./user/handlerprofil');
-
+const { getPreferences } = require('./preferences/get');
 
 const routes = [
     {
@@ -48,6 +48,14 @@ const routes = [
             auth: false,
         },
     },
+    {
+        method: 'GET',
+        path: '/preferences',
+        handler: getPreferences,
+        options: {
+            auth: false,
+        },
+    }
 ];
 
 module.exports = routes;
