@@ -51,7 +51,7 @@ const loginHandler = async (request, h) => {
 
         // Simpan access token ke tabel tokens
         const tokenQuery = 'INSERT INTO tokens (token, created_at) VALUES (?, NOW(), ?)';
-        await pool.query(tokenQuery, [accessToken, expiresAt]);
+        await pool.query(tokenQuery, [accessToken]);
 
         
         return h.response({
