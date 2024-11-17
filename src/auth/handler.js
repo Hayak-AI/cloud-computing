@@ -49,6 +49,8 @@ const registerHandler = async (request, h) => {
             [name, email, hashedPassword, 'local']  // Menambahkan provider 'local'
         );
 
+        await pool.query('INSERT INTO preferences (user_id, created_at, updated_at, voice_detection, dark_mode, location_tracking) VALUES (?, NOW(), NOW(), false, false, false)', [result.insertId]);
+
         // Kembalikan respons sukses
         return h.response({
             status: 'success',
