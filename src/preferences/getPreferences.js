@@ -7,10 +7,10 @@ const pool = require('../database');
  * @param {import("hapi").ResponseToolkit} res 
  * @returns 
  */
+
 const getPreferences = async (req, res) => {
     const authorizationHeader = req.headers['authorization'];
 
-    // Cek apakah ada Authorization header
     if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
         return res.response({
             status: 'fail',
@@ -32,7 +32,7 @@ const getPreferences = async (req, res) => {
     }
 
     try {
-        const query = 'SELECT * FROM preferences WHERE user_id = ?';
+        const query = 'SELECT * FROM preferences WHERE user_id = ? ORDER BY updated_at DESC LIMIT 1';
         const [rows] = await pool.execute(query, [decodedToken.user.id]);
 
         return res.response({
@@ -40,8 +40,7 @@ const getPreferences = async (req, res) => {
             data: {
                 voice_detection: Boolean(rows[0].voice_detection),
                 dark_mode: Boolean(rows[0].dark_mode),
-                location_tracking: Boolean(rows[0].location_tracking
-            )}
+                location_tracking: Boolean(rows[0].location_tracking)}
         }).code(200);
     } catch (error) {
         return res.response({
@@ -49,9 +48,6 @@ const getPreferences = async (req, res) => {
             message: 'Terjadi kegagalan pada server'
         }).code(500);
     }
-
-    
-
 }
 
 module.exports = {

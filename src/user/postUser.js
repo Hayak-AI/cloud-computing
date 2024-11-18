@@ -3,13 +3,9 @@ const path = require('path');
 const pool = require('../database');
 const jwt = require('jsonwebtoken');
 
-const ACCESS_TOKEN_SECRET = 'some_shared_secret';
-
-// Handler untuk meng-upload foto profil
 const uploadProfilePhotoHandler = async (request, h) => {
     const authorizationHeader = request.headers['authorization'];
     
-
     // Cek apakah ada Authorization header
     if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
         return h.response({
@@ -23,7 +19,7 @@ const uploadProfilePhotoHandler = async (request, h) => {
     // Verifikasi token secara manual
     let decodedToken;
     try {
-        decodedToken = jwt.verify(token, ACCESS_TOKEN_SECRET); // Verifikasi JWT secara manual
+        decodedToken = jwt.verify(token, process.env.JWT_SECRET); // Verifikasi JWT secara manual
     } catch (error) {
         return h.response({
             status: 'fail',
@@ -57,16 +53,16 @@ const uploadProfilePhotoHandler = async (request, h) => {
     const writeStream = await fs.createWriteStream(filePath);
     file.pipe(writeStream);
 
-    // writeStream.on('finish', async () => {
+    writeStream.on('finish', async () => {
     //     // Setelah file selesai di-upload, simpan URL ke database
-    //     const imageUrl = `/uploads/${filename}`;
+    const imageUrl = `/uploads/${filename}`;
 
     //     // Misalnya kita simpan URL foto profil ke tabel users
     //     // const query = 'UPDATE users SET profile_photo = ? WHERE id = ?';
     //     // await pool.query(query, [imageUrl, decodedToken.user.id]);
 
     //     // Kembalikan response dengan URL gambar
-    // });
+    });
     return h.response({
         status: 'success',
         data: {
