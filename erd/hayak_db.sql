@@ -13,7 +13,7 @@ CREATE TABLE `users` (
 
 CREATE TABLE `tokens` (
   `token_id` INT PRIMARY KEY,
-  `token` VARCHAR(100),
+  `token` TEXT,
   `created_at` TIMESTAMP
 );
 
