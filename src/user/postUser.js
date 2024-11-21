@@ -1,31 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 const pool = require('../database');
-const jwt = require('jsonwebtoken');
 
 const uploadProfilePhotoHandler = async (request, h) => {
-    const authorizationHeader = request.headers['authorization'];
-    
-    // Cek apakah ada Authorization header
-    if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
-        return h.response({
-            status: 'fail',
-            message: 'Anda tidak memiliki akses'
-        }).code(401);
-    }
-
-    const token = authorizationHeader.replace('Bearer ', '');
-
-    // Verifikasi token secara manual
-    let decodedToken;
-    try {
-        decodedToken = jwt.verify(token, process.env.JWT_SECRET); // Verifikasi JWT secara manual
-    } catch (error) {
-        return h.response({
-            status: 'fail',
-            message: 'Anda tidak memiliki akses'
-        }).code(401);
-    }
+    const userId = request.auth.artifacts.decoded.payload.user.id
 
     // Cek apakah file ada dalam request
     const file = request.payload.file;
@@ -54,14 +32,8 @@ const uploadProfilePhotoHandler = async (request, h) => {
     file.pipe(writeStream);
 
     writeStream.on('finish', async () => {
-    //     // Setelah file selesai di-upload, simpan URL ke database
     const imageUrl = `/uploads/${filename}`;
 
-    //     // Misalnya kita simpan URL foto profil ke tabel users
-    //     // const query = 'UPDATE users SET profile_photo = ? WHERE id = ?';
-    //     // await pool.query(query, [imageUrl, decodedToken.user.id]);
-
-    //     // Kembalikan response dengan URL gambar
     });
     return h.response({
         status: 'success',
@@ -78,8 +50,7 @@ const uploadProfilePhotoHandler = async (request, h) => {
             message: 'Terjadi kesalahan saat mengunggah gambar'
         }).code(500);
     });
-
-
+    
 };
 
 module.exports = { uploadProfilePhotoHandler };

@@ -3,30 +3,12 @@ const pool = require('../database');
 const jwt = require('jsonwebtoken');
 
 const getContactsHandler = async (request, h) => {
-    const authorizationHeader = request.headers['authorization'];
 
-    if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
-        return h.response({
-            status: 'fail',
-            message: 'Anda tidak memiliki akses',
-        }).code(401);
-    }
-
-    const token = authorizationHeader.replace('Bearer ', '');
-
-    let decodedToken;
-    try {
-        decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (error) {
-        return h.response({
-        status: 'fail',
-        message: 'Anda tidak memiliki akses'
-        }).code(401);
-    }
+    const userId = request.auth.artifacts.decoded.payload.user.id
 
     try {
         const query = 'SELECT * FROM contacts WHERE user_id = ?';
-        const [rows] = await pool.execute(query, [decodedToken.user.id]);
+        const [rows] = await pool.execute(query, [userId]);
 
         if (rows.length === 0) {
             return h.response({

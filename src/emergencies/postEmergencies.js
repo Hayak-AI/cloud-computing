@@ -1,27 +1,7 @@
 const pool = require('../database');
-const jwt = require('jsonwebtoken');
 
 const markUserInDangerHandler = async (request, h) => {
-    const authorizationHeader = request.headers['authorization'];
-
-    if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
-        return h.response({
-            status: 'fail',
-            message: 'Anda tidak memiliki akses',
-        }).code(401);
-    }
-
-    const token = authorizationHeader.replace('Bearer ', '');
-    let decodedToken;
-
-    try {
-        decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (error) {
-        return h.response({
-            status: 'fail',
-            message: 'Token tidak valid',
-        }).code(401);
-    }
+    const userId = request.auth.artifacts.decoded.payload.user.id
 
     const { description, location } = request.payload;
     const { name, latitude, longitude } = location;
@@ -45,13 +25,12 @@ const markUserInDangerHandler = async (request, h) => {
 
         const [reportResult] = await pool.query(
             'INSERT INTO reports (user_id, location_id, report_description, evidence_url) VALUES (?, ?, ?, ?)', // Perbaikan kolom di query
-            [decodedToken.user.id, location_id, description, evidence_url] 
+            [userId, location_id, description, evidence_url] 
         );
-        
 
         const emergencyResult = await pool.query(
             'INSERT INTO emergencies (user_id, location_id, emergency_status) VALUES (?, ?, ?)',
-            [decodedToken.user.id, location_id, 'ongoing']
+            [userId, location_id, 'ongoing']
         );
 
         return h.response({

@@ -1,4 +1,3 @@
-const jwt = require('jsonwebtoken');
 const pool = require('../database');
 
 /**
@@ -8,32 +7,12 @@ const pool = require('../database');
  * @returns 
  */
 
-const getPreferences = async (req, res) => {
-    const authorizationHeader = req.headers['authorization'];
-
-    if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
-        return res.response({
-            status: 'fail',
-            message: 'Anda tidak memiliki akses'
-        }).code(401);
-    }
-
-    const token = authorizationHeader.replace('Bearer ', '');
-
-    let decodedToken;
-    try {
-        decodedToken = jwt.verify(token, process.env.JWT_SECRET); 
-        console.log// Verifikasi JWT secara manual
-    } catch (error) {
-        return res.response({
-            status: 'fail',
-            message: 'Anda tidak memiliki akses'
-        }).code(401);
-    }
+const getPreferences = async (request, res) => {
+    const userId = request.auth.artifacts.decoded.payload.user.id
 
     try {
         const query = 'SELECT * FROM preferences WHERE user_id = ? ORDER BY updated_at DESC LIMIT 1';
-        const [rows] = await pool.execute(query, [decodedToken.user.id]);
+        const [rows] = await pool.execute(query, [userId]);
 
         return res.response({
             status: 'success',
@@ -48,7 +27,7 @@ const getPreferences = async (req, res) => {
             message: 'Terjadi kegagalan pada server'
         }).code(500);
     }
-}
+};
 
 module.exports = {
     getPreferences
