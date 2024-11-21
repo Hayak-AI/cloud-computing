@@ -1,24 +1,24 @@
 const pool = require('../database');
+const Joi = require('joi');
 
-/**
- * 
- * @param {*} req 
- * @param {import("hapi").ResponseToolkit} res 
- * @returns 
- */
+const schema = Joi.object({
+    authorization: Joi.string().pattern(/^Bearer\s.+$/).required(), // Validasi format header Authorization
+    voice_detection: Joi.boolean().required(),
+    dark_mode: Joi.boolean().required(),
+    location_tracking: Joi.boolean().required(),
+});
 
 const postPreferences = async (req, res) => {
-    const userId = req.auth.artifacts.decoded.payload.user.id
 
+     const userId = req.auth.artifacts.decoded.payload.user.id
     const { voice_detection, dark_mode, location_tracking } = req.payload;
-    if (
-        typeof voice_detection !== 'boolean' || 
-        typeof dark_mode !== 'boolean' || 
-        typeof location_tracking !== 'boolean'
-    ) {
+
+    // Validasi data dengan Joi
+    const { error } = schema.validate({ voice_detection, dark_mode, location_tracking });
+    if (error) {
         return res.response({
             status: 'fail',
-            message: 'Data yang Anda masukkan salah'
+            message: error.details[0].message,
         }).code(400);
     }
 
@@ -40,16 +40,17 @@ const postPreferences = async (req, res) => {
 
         return res.response({
             status: 'success',
+            message: 'Preferensi berhasil disimpan',
         }).code(201);
     } catch (error) {
-        console.error(error); // Debugging jika terjadi kesalahan
+        console.error('Database query error:', error); // Debugging jika terjadi kesalahan
         return res.response({
             status: 'fail',
-            message: 'Terjadi kegagalan pada server'
+            message: 'Terjadi kegagalan pada server',
         }).code(500);
     }
 };
 
 module.exports = {
-    postPreferences
+    postPreferences,
 };

@@ -1,12 +1,5 @@
 const pool = require('../database');
 
-/**
- * 
- * @param {*} req 
- * @param {import("hapi").ResponseToolkit} res 
- * @returns 
- */
-
 const getPreferences = async (request, res) => {
     const userId = request.auth.artifacts.decoded.payload.user.id
 
@@ -29,6 +22,4 @@ const getPreferences = async (request, res) => {
     }
 };
 
-module.exports = {
-    getPreferences
-}
+module.exports = {getPreferences}

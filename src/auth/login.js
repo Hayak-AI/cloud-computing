@@ -1,15 +1,23 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const pool = require('../database');
+const Joi = require('joi');
+
+// Schema validasi menggunakan Joi
+const schema = Joi.object({
+    email: Joi.string().email().required(),
+    password: Joi.string().min(8).required(),
+});
 
 const loginHandler = async (request, h) => {
     const { email, password } = request.payload;
 
-    // Validasi input
-    if (!email || !password || password.length < 8) {
+    // Validasi input menggunakan Joi
+    const { error } = schema.validate({ email, password });
+    if (error) {
         return h.response({
             status: 'fail',
-            message: 'Email atau password salah'
+            message: 'Email atau password salah',
         }).code(400);
     }
 
@@ -21,22 +29,22 @@ const loginHandler = async (request, h) => {
         if (results.length === 0) {
             return h.response({
                 status: 'fail',
-                message: 'Email atau password salah'
+                message: 'Email atau password salah',
             }).code(400);
         }
 
         const user = results[0];
 
         // Verifikasi password
-        const isPasswordValid = await bcrypt.compare(password, user.password_hash);
-        if (!isPasswordValid) {
+        const isValid = await bcrypt.compare(password, user.password_hash);
+        if (!isValid) {
             return h.response({
                 status: 'fail',
-                message: 'Email atau password salah'
+                message: 'Email atau password salah',
             }).code(400);
         }
 
-        // Generate access token (JWT) dengan payload berisi data user
+        // Generate token
         const accessToken = jwt.sign(
             {
                 user: {
@@ -45,15 +53,14 @@ const loginHandler = async (request, h) => {
                     name: user.name,
                 },
             },
-            process.env.JWT_SECRET 
+            process.env.JWT_SECRET,
+            { expiresIn: process.env.JWT_EXPIRES_IN }
         );
-
 
         // Simpan access token ke tabel tokens
         const tokenQuery = 'INSERT INTO tokens (token, created_at) VALUES (?, NOW())';
         await pool.query(tokenQuery, [accessToken]);
 
-        
         return h.response({
             status: 'success',
             data: {
@@ -62,10 +69,10 @@ const loginHandler = async (request, h) => {
         }).code(200);
 
     } catch (error) {
-        console.error(error);
+        console.error('Database query error:', error);
         return h.response({
             status: 'fail',
-            message: 'Terjadi kesalahan di server',
+            message: 'Terjadi kesalahan pada server',
         }).code(500);
     }
 };

@@ -1,6 +1,8 @@
 const pool = require('../database');
 
 const getProfileHandler = async (request, h) => {
+
+const getProfileHandler = async (request, h) => {
     const userId = request.auth.artifacts.decoded.payload.user.id
 
     const [rows] = await pool.query('SELECT * FROM users WHERE id = ?', [userId]);

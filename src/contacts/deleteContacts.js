@@ -1,4 +1,9 @@
 const pool = require('../database');
+const Joi = require('joi');
+
+const schema = Joi.object({
+    contact_id: Joi.number().integer().required(),
+});
 
 const deleteContactsHandler = async (request, h) => {
 
@@ -6,10 +11,11 @@ const deleteContactsHandler = async (request, h) => {
 
     const { contact_id } = request.payload;
 
-    if (!contact_id) {
+    const { error } = schema.validate({ contact_id });
+    if (error) {
         return h.response({
             status: 'fail',
-            message: 'Kontak yang Anda masukkan salah',
+            message: 'Data yang Anda masukkan salah',
         }).code(400);
     }
 

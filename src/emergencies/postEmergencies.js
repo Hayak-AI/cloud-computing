@@ -1,19 +1,29 @@
 const pool = require('../database');
+const Joi = require('joi');
 
-const markUserInDangerHandler = async (request, h) => {
+const schema = Joi.object({
+    description: Joi.string().required(),
+    location: Joi.object({
+        name: Joi.string().required(),
+        latitude: Joi.number().required(),
+        longitude: Joi.number().required(),
+    }).required(),
+    evidence_url: Joi.string().uri().allow(null).optional(),
+});
+
+const postEmergenciesHandler = async (request, h) => {
     const userId = request.auth.artifacts.decoded.payload.user.id
 
-    const { description, location } = request.payload;
-    const { name, latitude, longitude } = location;
-
-    if (!description || !location || !name || !latitude || !longitude) {
+    const { error } = schema.validate(request.payload);
+    if (error) {
         return h.response({
             status: 'fail',
-            message: 'Data yang Anda masukkan salah',
+            message: 'Data Anda tidak valid',
         }).code(400);
     }
 
-    const evidence_url = request.payload.evidence_url || null;
+    const { description, location, evidence_url} = request.payload;
+    const { name, latitude, longitude } = location;
 
     try {
         const [mapResult] = await pool.query(
@@ -23,7 +33,7 @@ const markUserInDangerHandler = async (request, h) => {
 
         const location_id = mapResult.insertId || mapResult.id;
 
-        const [reportResult] = await pool.query(
+        await pool.query(
             'INSERT INTO reports (user_id, location_id, report_description, evidence_url) VALUES (?, ?, ?, ?)', // Perbaikan kolom di query
             [userId, location_id, description, evidence_url] 
         );
@@ -40,9 +50,9 @@ const markUserInDangerHandler = async (request, h) => {
         console.error('Database query error:', error);
         return h.response({
             status: 'error',
-            message: 'Terjadi kesalahan pada server',
+            message: 'Internal Error',
         }).code(500);
     }
 };
 
-module.exports = { markUserInDangerHandler };
+module.exports = { postEmergenciesHandler };
