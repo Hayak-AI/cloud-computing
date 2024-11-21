@@ -3,27 +3,8 @@ const pool = require('../database');
 const jwt = require('jsonwebtoken');
 
 const updateContactsHandler = async (request, h) => {
-    const authorizationHeader = request.headers['authorization'];
 
-    if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
-        return h.response({
-            status: 'fail',
-            message: 'Anda tidak memiliki akses',
-        }).code(401);
-    }
-
-    const token = authorizationHeader.replace('Bearer ', '');
-
-    // Verifikasi token
-    let decodedToken;
-    try {
-        decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (error) {
-        return h.response({
-            status: 'fail',
-            message: 'Token tidak valid',
-        }).code(401);
-    }
+    const userId = request.auth.artifacts.decoded.payload.user.id
 
     const { contact_id, name, phone, email, message } = request.payload;
 
@@ -38,7 +19,7 @@ const updateContactsHandler = async (request, h) => {
     try {
         const [result] = await pool.query(
             'UPDATE contacts SET contact_name = ?, contact_phone = ?, contact_email = ?, message = ? WHERE id = ? AND user_id = ?',
-            [name, phone, email, message, contact_id, decodedToken.user.id]
+            [name, phone, email, message, contact_id, userId]
         );
 
         if (result.affectedRows === 0) {

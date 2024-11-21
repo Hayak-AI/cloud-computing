@@ -1,4 +1,3 @@
-const jwt = require('jsonwebtoken');
 const pool = require('../database');
 
 /**
@@ -9,26 +8,7 @@ const pool = require('../database');
  */
 
 const postPreferences = async (req, res) => {
-    const authorizationHeader = req.headers['authorization'];
-
-    if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
-        return res.response({
-            status: 'fail',
-            message: 'Anda tidak memiliki akses'
-        }).code(401);
-    }
-
-    const token = authorizationHeader.replace('Bearer ', '');
-
-    let decodedToken;
-    try {
-        decodedToken = jwt.verify(token, process.env.JWT_SECRET); // Verifikasi JWT
-    } catch (error) {
-        return res.response({
-            status: 'fail',
-            message: 'Anda tidak memiliki akses'
-        }).code(401);
-    }
+    const userId = req.auth.artifacts.decoded.payload.user.id
 
     const { voice_detection, dark_mode, location_tracking } = req.payload;
     if (
@@ -52,7 +32,7 @@ const postPreferences = async (req, res) => {
                 location_tracking = VALUES(location_tracking)
         `;
         await pool.execute(query, [
-            decodedToken.user.id,
+            userId,
             voice_detection,
             dark_mode,
             location_tracking,
