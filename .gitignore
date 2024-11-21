@@ -1,3 +1,4 @@
 /node_modules
 .env
 erd/hayakdb.sql
+/uploads
