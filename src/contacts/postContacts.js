@@ -1,6 +1,4 @@
-require('dotenv').config();
 const pool = require('../database');
-const jwt = require('jsonwebtoken');
 const Joi = require('joi');
 
 const schema = Joi.object({
@@ -11,27 +9,7 @@ const schema = Joi.object({
 });
 
 const addContactsHandler = async (request, h) => {
-    const authorizationHeader = request.headers['authorization'];
-
-    if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
-        return h.response({
-            status: 'fail',
-            message: 'Anda tidak memiliki akses',
-        }).code(401);
-    }
-
-    const token = authorizationHeader.replace('Bearer ', '');
-
-    let decodedToken;
-    try {
-        decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (error) {
-        console.error("Token verification failed:", error);
-        return h.response({
-            status: 'fail',
-            message: 'Token tidak valid',
-        }).code(401);
-    }
+    const userId = request.auth.artifacts.decoded.payload.user.id
 
     const { name, phone, email, message } = request.payload;
 
@@ -45,7 +23,7 @@ const addContactsHandler = async (request, h) => {
 
     try {
         await pool.query('INSERT INTO contacts (user_id, contact_name, contact_phone, contact_email, message) VALUES (?, ?, ?, ?, ?)', 
-            [decodedToken.user.id, name, phone, email, message]);
+            [userId, name, phone, email, message]);
 
         return h.response({
             status: 'success',

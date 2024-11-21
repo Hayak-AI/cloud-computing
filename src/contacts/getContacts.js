@@ -1,48 +1,13 @@
-require('dotenv').config();
 const pool = require('../database');
-const jwt = require('jsonwebtoken');
 const Joi = require('joi');
 
-const schema = Joi.object({
-    authorization: Joi.string().required(),
-});
-
 const getContactsHandler = async (request, h) => {
-    const { authorization } = request.headers;
-
-    // Validasi header dengan Joi
-    const { error } = schema.validate({ authorization });
-    if (error) {
-        return h.response({
-            status: 'fail',
-            message: error.details[0].message,
-        }).code(400);
-    }
-
-    if (!authorization || !authorization.startsWith('Bearer ')) {
-        return h.response({
-            status: 'fail',
-            message: 'Anda tidak memiliki akses',
-        }).code(401);
-    }
-
-    const token = authorization.replace('Bearer ', '');
-
-    // Verifikasi token JWT
-    let decodedToken;
-    try {
-        decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (error) {
-        return h.response({
-            status: 'fail',
-            message: 'Token tidak valid',
-        }).code(401);
-    }
+    const userId = request.auth.artifacts.decoded.payload.user.id
 
     try {
         // Query untuk mendapatkan kontak darurat
         const query = 'SELECT * FROM contacts WHERE user_id = ?';
-        const [rows] = await pool.execute(query, [decodedToken.user.id]);
+        const [rows] = await pool.execute(query, [userId]);
 
         if (rows.length === 0) {
             return h.response({

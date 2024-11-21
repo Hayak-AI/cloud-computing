@@ -1,5 +1,4 @@
 const pool = require('../database');
-const jwt = require('jsonwebtoken');
 const Joi = require('joi');
 
 // Schema validasi menggunakan Joi
@@ -11,53 +10,39 @@ const schema = Joi.object({
 
 // Handler untuk memperbarui data pengguna
 const updateUserHandler = async (request, h) => {
-    const { name, profile_photo, phone_number } = request.payload;
-    const token = request.headers.authorization?.split(' ')[1]; // Mengambil token dari header Authorization
-
-    if (!token) {
-        return h.response({
-            status: 'fail',
-            message: 'Anda tidak memiliki akses'
-        }).code(401); // Unauthorized jika tidak ada token
-    }
-
-    const { error } = schema.validate({ name, profile_photo, phone_number });
+    const userId = request.auth.artifacts.decoded.payload.user.id
+        const { error } = schema.validate({ name, profile_photo, phone_number });
     if (error) {
         return h.response({
             status: 'fail',
             message: 'Data yang Anda masukkan salah',
         }).code(400);
     }
-
-    try {
-        // Verifikasi token untuk mendapatkan ID pengguna
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-        // Query untuk memeriksa apakah token ada di database dan sesuai dengan user
-        const tokenQuery = 'SELECT * FROM tokens WHERE token = ?';
-        const [tokenResults] = await pool.query(tokenQuery, [token]);
-
-        if (tokenResults.length === 0) {
+    const { name, profile_photo, phone_number } = request.payload;
+        if (!name || !profile_photo || !phone_number) {
             return h.response({
                 status: 'fail',
-                message: 'Token tidak valid'
-            }).code(401); // Unauthorized jika token tidak valid
+                message: 'Data yang Anda masukkan salah'
+            }).code(400); 
         }
 
-        const updateQuery = 'UPDATE users SET name = ?, profile_photo = ?, phone_number = ? WHERE id = ?';
-        await pool.query(updateQuery, [name, profile_photo, phone_number, decoded.user.id]);
+        const updateQuery = `
+            UPDATE users 
+            SET name = ?, profile_photo = ?, phone_number = ? 
+            WHERE id = ?
+        `;
+        const result = await pool.query(updateQuery, [name, profile_photo, phone_number, userId]);
+
+        if (result.affectedRows === 0) {
+            return h.response({
+                status: 'fail',
+                message: 'Pengguna tidak ditemukan'
+            }).code(404); 
+        }
 
         return h.response({
             status: 'success',
-            message: 'Data pengguna berhasil diperbarui'
-        }).code(200);
-    } catch (error) {
-        console.error('Database query error:', error);
-        return h.response({
-            status: 'error',
-            message: 'Terjadi kesalahan pada server'
-        }).code(500);
-    }
+        }).code(201);
 };
 
 module.exports = { updateUserHandler };

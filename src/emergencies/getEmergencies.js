@@ -1,38 +1,7 @@
 const pool = require('../database');
-const jwt = require('jsonwebtoken');
-const Joi = require('joi');
-
-const schema = Joi.object({
-    authorization: Joi.string().required(),
-});
 
 const getEmergenciesHandler = async (request, h) => {
-    const { authorization } = request.headers;
-    const { error } = schema.validate({ authorization });
-    if (error) {
-        return h.response({
-            status: 'fail',
-            message: 'Data yang Anda masukkan salah',
-        }).code(400);
-    }
-
-    if (!authorization || !authorization.startsWith('Bearer ')) {
-        return h.response({
-            status: 'fail',
-            message: 'Anda tidak memiliki akses',
-        }).code(401);
-    }
-
-    const token = authorization.replace('Bearer ', '');
-    let decodedToken;
-    try {
-        decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (error) {
-        return h.response({
-            status: 'fail',
-            message: 'Token tidak valid',
-        }).code(401);
-    }
+    const userId = request.auth.artifacts.decoded.payload.user.id
 
     //Ambil data emergency berdasarkan user_id yang ada dalam decodedToken
     try {
@@ -55,7 +24,7 @@ const getEmergenciesHandler = async (request, h) => {
                 e.user_id = ? AND e.emergency_status = 'ongoing';
         `;
 
-        const [rows] = await pool.execute(query, [decodedToken.user.id]);
+        const [rows] = await pool.execute(query, [userId]);
 
         if (rows.length === 0) {
             return h.response({

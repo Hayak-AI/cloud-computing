@@ -1,51 +1,11 @@
-const jwt = require('jsonwebtoken');
 const pool = require('../database');
-const Joi = require('joi');
 
-/**
- * 
- * @param {*} req 
- * @param {import("hapi").ResponseToolkit} res 
- * @returns 
- */
+const getPreferences = async (request, res) => {
+    const userId = request.auth.artifacts.decoded.payload.user.id
 
-const schema = Joi.object({
-    authorization: Joi.string().required(),
-});
-
-const getPreferences = async (req, res) => {
-    const authorizationHeader = req.headers['authorization']; 
-
-    const { error } = schema.validate({ authorization: authorizationHeader });
-     if (error) {
-        return res.response({
-            status: 'fail',
-            message: 'Anda tidak memiliki akses',
-        }).code(401);
-    }
-
-    const token = authorizationHeader.replace('Bearer ', '');
-
-    let decodedToken;
     try {
-        decodedToken = jwt.verify(token, process.env.JWT_SECRET); 
-    } catch (error) {
-        return res.response({
-            status: 'fail',
-            message: 'Anda tidak memiliki akses'
-        }).code(401);
-    }
-
-        const [rows] = await pool.query('SELECT * FROM preferences WHERE user_id = ? ORDER BY updated_at DESC LIMIT 1', [decodedToken.user.id]);
-
-        if (rows.length === 0) {
-            return res.response({
-                status: 'fail',
-                message: 'Pengguna tidak ditemukan',
-            }).code(404);
-        }
-    
-        const preferences = rows[0];
+        const query = 'SELECT * FROM preferences WHERE user_id = ? ORDER BY updated_at DESC LIMIT 1';
+        const [rows] = await pool.execute(query, [userId]);
 
         return res.response({
             status: 'success',
@@ -54,6 +14,12 @@ const getPreferences = async (req, res) => {
                 dark_mode: Boolean(rows[0].dark_mode),
                 location_tracking: Boolean(rows[0].location_tracking)}
         }).code(200);
+    } catch (error) {
+        return res.response({
+            status: 'fail',
+            message: 'Terjadi kegagalan pada server'
+        }).code(500);
+    }
 };
 
 module.exports = {getPreferences}
