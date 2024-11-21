@@ -2,7 +2,6 @@ const pool = require('../database');
 const Joi = require('joi');
 
 const schema = Joi.object({
-    authorization: Joi.string().pattern(/^Bearer\s.+$/).required(), // Validasi format header Authorization
     voice_detection: Joi.boolean().required(),
     dark_mode: Joi.boolean().required(),
     location_tracking: Joi.boolean().required(),
@@ -11,7 +10,7 @@ const schema = Joi.object({
 const postPreferences = async (req, res) => {
 
      const userId = req.auth.artifacts.decoded.payload.user.id
-    const { voice_detection, dark_mode, location_tracking } = req.payload;
+     const { voice_detection, dark_mode, location_tracking } = req.payload;
 
     // Validasi data dengan Joi
     const { error } = schema.validate({ voice_detection, dark_mode, location_tracking });
