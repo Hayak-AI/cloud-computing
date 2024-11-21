@@ -1,6 +1,11 @@
 require('dotenv').config();
 const pool = require('../database');
 const jwt = require('jsonwebtoken');
+const Joi = require('joi');
+
+const schema = Joi.object({
+    contact_id: Joi.number().integer().required(),
+});
 
 const deleteContactsHandler = async (request, h) => {
     const authorizationHeader = request.headers['authorization'];
@@ -27,18 +32,17 @@ const deleteContactsHandler = async (request, h) => {
 
     const { contact_id } = request.payload;
 
-    if (!contact_id) {
+    const { error } = schema.validate({ contact_id });
+    if (error) {
         return h.response({
             status: 'fail',
-            message: 'Kontak yang Anda masukkan salah',
+            message: 'Data yang Anda masukkan salah',
         }).code(400);
     }
 
     try {
-        const [result] = await pool.query(
-            'DELETE FROM contacts WHERE id = ? AND user_id = ?',
-            [contact_id, decodedToken.user.id]
-        );
+        const deleteQuery = 'DELETE FROM contacts WHERE id = ? AND user_id = ?';
+        const [result] = await pool.query(deleteQuery, [contact_id, decodedToken.user.id]);
 
         if (result.affectedRows === 0) {
             return h.response({

@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const pool = require('../database');
+const Joi = require('joi');
 
 /**
  * 
@@ -8,17 +9,34 @@ const pool = require('../database');
  * @returns 
  */
 
-const postPreferences = async (req, res) => {
-    const authorizationHeader = req.headers['authorization'];
+const schema = Joi.object({
+    authorization: Joi.string().pattern(/^Bearer\s.+$/).required(), // Validasi format header Authorization
+    voice_detection: Joi.boolean().required(),
+    dark_mode: Joi.boolean().required(),
+    location_tracking: Joi.boolean().required(),
+});
 
-    if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
+const postPreferences = async (req, res) => {
+    const { authorization } = req.headers;
+    const { voice_detection, dark_mode, location_tracking } = req.payload;
+
+    // Validasi data dengan Joi
+    const { error } = schema.validate({ authorization, voice_detection, dark_mode, location_tracking });
+    if (error) {
         return res.response({
             status: 'fail',
-            message: 'Anda tidak memiliki akses'
+            message: error.details[0].message,
+        }).code(400);
+    }
+
+    if (!authorization || !authorization.startsWith('Bearer ')) {
+        return res.response({
+            status: 'fail',
+            message: 'Anda tidak memiliki akses',
         }).code(401);
     }
 
-    const token = authorizationHeader.replace('Bearer ', '');
+    const token = authorization.replace('Bearer ', '');
 
     let decodedToken;
     try {
@@ -26,20 +44,8 @@ const postPreferences = async (req, res) => {
     } catch (error) {
         return res.response({
             status: 'fail',
-            message: 'Anda tidak memiliki akses'
+            message: 'Token tidak valid',
         }).code(401);
-    }
-
-    const { voice_detection, dark_mode, location_tracking } = req.payload;
-    if (
-        typeof voice_detection !== 'boolean' || 
-        typeof dark_mode !== 'boolean' || 
-        typeof location_tracking !== 'boolean'
-    ) {
-        return res.response({
-            status: 'fail',
-            message: 'Data yang Anda masukkan salah'
-        }).code(400);
     }
 
     try {
@@ -60,16 +66,17 @@ const postPreferences = async (req, res) => {
 
         return res.response({
             status: 'success',
+            message: 'Preferensi berhasil disimpan',
         }).code(201);
     } catch (error) {
-        console.error(error); // Debugging jika terjadi kesalahan
+        console.error('Database query error:', error); // Debugging jika terjadi kesalahan
         return res.response({
             status: 'fail',
-            message: 'Terjadi kegagalan pada server'
+            message: 'Terjadi kegagalan pada server',
         }).code(500);
     }
 };
 
 module.exports = {
-    postPreferences
+    postPreferences,
 };

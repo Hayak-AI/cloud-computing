@@ -2,47 +2,54 @@ const fs = require('fs');
 const path = require('path');
 const pool = require('../database');
 const jwt = require('jsonwebtoken');
+const Joi = require('joi');
+
+const schema = Joi.object({
+    authorization: Joi.string().required(),
+    file: Joi.object().required(),
+});
 
 const uploadProfilePhotoHandler = async (request, h) => {
-    const authorizationHeader = request.headers['authorization'];
+    const { authorization } = request.headers;
+    const { file } = request.payload;
     
-    // Cek apakah ada Authorization header
-    if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
+const { error } = schema.validate({ authorization, file });
+    if (error) {
         return h.response({
             status: 'fail',
-            message: 'Anda tidak memiliki akses'
+            message: 'Data yang Anda masukkan salah',
+        }).code(400);
+    }
+
+    // Cek apakah ada Authorization header
+    if (!authorization || !authorization.startsWith('Bearer ')) {
+        return h.response({
+            status: 'fail',
+            message: 'Anda tidak memiliki akses',
         }).code(401);
     }
 
-    const token = authorizationHeader.replace('Bearer ', '');
+    const token = authorization.replace('Bearer ', '');
 
     // Verifikasi token secara manual
     let decodedToken;
     try {
-        decodedToken = jwt.verify(token, process.env.JWT_SECRET); // Verifikasi JWT secara manual
+        decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     } catch (error) {
         return h.response({
             status: 'fail',
-            message: 'Anda tidak memiliki akses'
+            message: 'Token tidak valid',
         }).code(401);
     }
 
-    // Cek apakah file ada dalam request
-    const file = request.payload.file;
-    if (!file) {
-        return h.response({
-            status: 'fail',
-            message: 'Gambar yang Anda masukkan salah'
-        }).code(400);
-    }
-
-    // Cek apakah file yang di-upload adalah gambar
+    const { id } = decodedToken.user;
+    const fileExtension = path.extname(file.hapi.filename);
     const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
-    const fileExtension = path.extname(file.hapi.filename).toLowerCase();
 
     if (!allowedExtensions.includes(fileExtension)) {
         return h.response({
-            
+            status: 'fail',
+            message: 'Ekstensi file tidak diizinkan',
         }).code(400);
     }
 
@@ -50,36 +57,38 @@ const uploadProfilePhotoHandler = async (request, h) => {
     const filename = `${Date.now()}-${file.hapi.filename}`;
     const filePath = path.join(__dirname, '../..', 'uploads', filename);
     console.log(filePath)
-    const writeStream = await fs.createWriteStream(filePath);
+   const writeStream = fs.createWriteStream(filePath);
     file.pipe(writeStream);
 
-    writeStream.on('finish', async () => {
-    //     // Setelah file selesai di-upload, simpan URL ke database
-    const imageUrl = `/uploads/${filename}`;
+    return new Promise((resolve, reject) => {
+        writeStream.on('finish', async () => {
+            // Setelah file selesai di-upload, simpan URL ke database
+            const imageUrl = `/uploads/${filename}`;
+            try {
+                await pool.query('UPDATE users SET profile_photo = ? WHERE id = ?', [imageUrl, id]);
+                resolve(h.response({
+                    status: 'success',
+                    data: {
+                        imageUrl,
+                    },
+                }).code(200));
+            } catch (error) {
+                console.error('Database query error:', error);
+                reject(h.response({
+                    status: 'error',
+                    message: 'Terjadi kesalahan pada server',
+                }).code(500));
+            }
+        });
 
-    //     // Misalnya kita simpan URL foto profil ke tabel users
-    //     // const query = 'UPDATE users SET profile_photo = ? WHERE id = ?';
-    //     // await pool.query(query, [imageUrl, decodedToken.user.id]);
-
-    //     // Kembalikan response dengan URL gambar
+        writeStream.on('error', (error) => {
+            console.error('File upload error:', error);
+            reject(h.response({
+                status: 'error',
+                message: 'Terjadi kesalahan saat meng-upload file',
+            }).code(500));
+        });
     });
-    return h.response({
-        status: 'success',
-        data: {
-            image_url: filePath// imageUrl
-        }
-    }).code(201);
-
-    // Menangani error saat menulis file
-    writeStream.on('error', (err) => {
-        console.error('Error writing file:', err);
-        return h.response({
-            status: 'fail',
-            message: 'Terjadi kesalahan saat mengunggah gambar'
-        }).code(500);
-    });
-
-
 };
 
 module.exports = { uploadProfilePhotoHandler };

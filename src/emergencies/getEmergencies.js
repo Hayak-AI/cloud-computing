@@ -1,18 +1,29 @@
 const pool = require('../database');
 const jwt = require('jsonwebtoken');
+const Joi = require('joi');
+
+const schema = Joi.object({
+    authorization: Joi.string().required(),
+});
 
 const getEmergenciesHandler = async (request, h) => {
-    const authorizationHeader = request.headers['authorization'];
+    const { authorization } = request.headers;
+    const { error } = schema.validate({ authorization });
+    if (error) {
+        return h.response({
+            status: 'fail',
+            message: 'Data yang Anda masukkan salah',
+        }).code(400);
+    }
 
-    if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
+    if (!authorization || !authorization.startsWith('Bearer ')) {
         return h.response({
             status: 'fail',
             message: 'Anda tidak memiliki akses',
         }).code(401);
     }
 
-    const token = authorizationHeader.replace('Bearer ', '');
-
+    const token = authorization.replace('Bearer ', '');
     let decodedToken;
     try {
         decodedToken = jwt.verify(token, process.env.JWT_SECRET);

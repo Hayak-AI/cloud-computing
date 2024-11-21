@@ -10,7 +10,7 @@ const { getContactsHandler } = require('./contacts/getContacts');
 const { updateContactsHandler } = require('./contacts/putContacts');
 const { deleteContactsHandler } = require('./contacts/deleteContacts');
 const { getEmergenciesHandler } = require('./emergencies/getEmergencies');
-const { markUserInDangerHandler } = require('./emergencies/postEmergencies');
+const { postEmergenciesHandler } = require('./emergencies/postEmergencies');
 
 const routes = [
     {
@@ -112,7 +112,7 @@ const routes = [
     {
         method: 'POST',
         path: '/emergencies',
-        handler: markUserInDangerHandler,
+        handler: postEmergenciesHandler,
         options: {
             auth: false,
         },

@@ -1,5 +1,13 @@
 const pool = require('../database');
 const jwt = require('jsonwebtoken');
+const Joi = require('joi');
+
+// Schema validasi menggunakan Joi
+const schema = Joi.object({
+    name: Joi.string().min(3).max(30).optional(),
+    profile_photo: Joi.string().uri().optional(),
+    phone_number: Joi.string().min(10).max(15).optional(),
+});
 
 // Handler untuk memperbarui data pengguna
 const updateUserHandler = async (request, h) => {
@@ -10,55 +18,45 @@ const updateUserHandler = async (request, h) => {
         return h.response({
             status: 'fail',
             message: 'Anda tidak memiliki akses'
-        }).code(401); 
+        }).code(401); // Unauthorized jika tidak ada token
+    }
+
+    const { error } = schema.validate({ name, profile_photo, phone_number });
+    if (error) {
+        return h.response({
+            status: 'fail',
+            message: 'Data yang Anda masukkan salah',
+        }).code(400);
     }
 
     try {
+        // Verifikasi token untuk mendapatkan ID pengguna
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    
+        // Query untuk memeriksa apakah token ada di database dan sesuai dengan user
         const tokenQuery = 'SELECT * FROM tokens WHERE token = ?';
         const [tokenResults] = await pool.query(tokenQuery, [token]);
 
         if (tokenResults.length === 0) {
             return h.response({
                 status: 'fail',
-                message: 'Token tidak ditemukan atau tidak valid'
-            }).code(401); 
+                message: 'Token tidak valid'
+            }).code(401); // Unauthorized jika token tidak valid
         }
 
-        if (!name || !profile_photo || !phone_number) {
-            return h.response({
-                status: 'fail',
-                message: 'Data yang Anda masukkan salah'
-            }).code(400); 
-        }
-
-        
-        const updateQuery = `
-            UPDATE users 
-            SET name = ?, profile_photo = ?, phone_number = ? 
-            WHERE id = ?
-        `;
-        const result = await pool.query(updateQuery, [name, profile_photo, phone_number, decoded.user.id]);
-
-        if (result.affectedRows === 0) {
-            return h.response({
-                status: 'fail',
-                message: 'Pengguna tidak ditemukan'
-            }).code(404); 
-        }
+        const updateQuery = 'UPDATE users SET name = ?, profile_photo = ?, phone_number = ? WHERE id = ?';
+        await pool.query(updateQuery, [name, profile_photo, phone_number, decoded.user.id]);
 
         return h.response({
             status: 'success',
-        }).code(201); 
-
+            message: 'Data pengguna berhasil diperbarui'
+        }).code(200);
     } catch (error) {
-        console.error(error);
+        console.error('Database query error:', error);
         return h.response({
-            status: 'fail',
-            message: 'Token tidak valid atau kadaluarsa'
-        }).code(401); 
+            status: 'error',
+            message: 'Terjadi kesalahan pada server'
+        }).code(500);
     }
 };
 

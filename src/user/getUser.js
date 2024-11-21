@@ -1,13 +1,17 @@
 require('dotenv').config();
 const pool = require('../database');
 const jwt = require('jsonwebtoken');
+const Joi = require('joi');
 
+const schema = Joi.object({
+    authorization: Joi.string().required(),
+});
 
 const getProfileHandler = async (request, h) => {
-    const authorizationHeader = request.headers['authorization'];
+    const authorizationHeader = request.headers['authorization']; 
 
-
-    if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
+    const { error } = schema.validate({ authorization});
+    if (error) {
         return h.response({
             status: 'fail',
             message: 'Anda tidak memiliki akses',
@@ -15,7 +19,6 @@ const getProfileHandler = async (request, h) => {
     }
 
     const token = authorizationHeader.replace('Bearer ', '');
-
 
     let decodedToken;
     try {
@@ -26,7 +29,6 @@ const getProfileHandler = async (request, h) => {
             message: 'Token tidak valid',
         }).code(401);
     }
-
 
     const [rows] = await pool.query('SELECT * FROM users WHERE id = ?', [decodedToken.user.id]);
 
