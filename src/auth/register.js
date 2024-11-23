@@ -20,6 +20,16 @@ const registerHandler = async (request, h) => {
         }).code(400);
     }
 
+    // Periksa apakah email sudah ada di database
+    const [existingUser] = await pool.query('SELECT email FROM users WHERE email = ?', [email]);
+
+    if (existingUser.length > 0) {
+        return h.response({
+            status: 'fail',
+            message: 'Email sudah digunakan pengguna lain',
+        }).code(400);
+    }
+
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
