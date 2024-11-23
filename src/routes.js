@@ -1,6 +1,6 @@
 const { registerHandler } = require('./auth/register');
 const { loginHandler } = require('./auth/login');
-const { uploadProfilePhotoHandler } = require('./user/postUser');
+const { uploadProfilePhotoHandler } = require('./user/uploadProfile');
 const { updateUserHandler } = require('./user/putUser');
 const { getProfileHandler } = require('./user/getUser');
 const { getPreferences } = require('./preferences/getPreferences');
@@ -43,7 +43,7 @@ const routes = [
                 parse: true,
                 multipart: true
             }
-        }
+        },
     },
     {
         method: 'GET',
@@ -116,7 +116,7 @@ const routes = [
         options: {
             auth: 'jwt',
         },
-    }
+    },
 ];
 
 module.exports = routes;
