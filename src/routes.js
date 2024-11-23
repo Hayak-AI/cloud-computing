@@ -11,6 +11,9 @@ const { updateContactsHandler } = require('./contacts/putContacts');
 const { deleteContactsHandler } = require('./contacts/deleteContacts');
 const { getEmergenciesHandler } = require('./emergencies/getEmergencies');
 const { postEmergenciesHandler } = require('./emergencies/postEmergencies');
+const { postMapsReportHandler } = require('./maps/postMaps');
+const { getMapsHandler } = require('./maps/getMaps');
+const { deleteMapReportHandler } = require('./maps/delMaps');
 
 const routes = [
     {
@@ -113,6 +116,30 @@ const routes = [
         method: 'POST',
         path: '/emergencies',
         handler: postEmergenciesHandler,
+        options: {
+            auth: 'jwt',
+        },
+    },
+    {
+        method: 'POST',
+        path: '/maps-report',
+        handler: postMapsReportHandler,
+        options: {
+            auth: 'jwt',
+        },
+    },
+    {
+        method: 'GET',
+        path: '/maps-report',
+        handler: getMapsHandler,
+        options: {
+            auth: 'jwt',
+        },
+    },
+    {
+        method: 'DELETE',
+        path: '/maps-report',
+        handler: deleteMapReportHandler,
         options: {
             auth: 'jwt',
         },
