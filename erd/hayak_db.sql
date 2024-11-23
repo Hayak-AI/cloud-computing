@@ -122,4 +122,3 @@ ALTER TABLE `notifications` ADD FOREIGN KEY (`user_id`) REFERENCES `users` (`id`
 
 ALTER TABLE `notifications` ADD FOREIGN KEY (`contact_id`) REFERENCES `contacts` (`id`);
 
-ALTER TABLE `posts` ADD FOREIGN KEY (`post_id`) REFERENCES `posts` (`user_id`);
