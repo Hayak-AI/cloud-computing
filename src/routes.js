@@ -16,6 +16,11 @@ const { getMapsHandler } = require("./maps/getMaps");
 const { deleteMapReportHandler } = require("./maps/delMaps");
 const { forgotPasswordHandler } = require("./forgotpass/postPass");
 const { resetPasswordHandler } = require("./forgotpass/putPass");
+const { createPostHandler } = require("./comunityPost/createPost");
+const { getPostHandler } = require("./comunityPost/postGet");
+const { updatePostHandler } = require("./comunityPost/postUpdate");
+const { deleteComPostHandler } = require("./comunityPost/postDelete");
+const { getAllPostHandler } = require("./comunityPost/allpostGet");
 
 const routes = [
   {
@@ -152,9 +157,49 @@ const routes = [
     handler: forgotPasswordHandler,
   },
   {
-    method: 'PUT',
-    path: '/reset-password',
+    method: "PUT",
+    path: "/reset-password",
     handler: resetPasswordHandler,
+  },
+  {
+    method: "POST",
+    path: "/posts",
+    handler: createPostHandler,
+    options: {
+      auth: "jwt",
+    },
+  },
+  {
+    method: 'GET',
+    path: '/posts/{id}',
+    handler: getPostHandler,
+    options: {
+        auth: 'jwt',
+    },
+  },
+  {
+    method: 'PUT',
+    path: '/posts',
+    handler: updatePostHandler,
+    options: {
+        auth: 'jwt',
+    },
+  },
+  {
+    method: "DELETE",
+    path: "/posts",
+    handler: deleteComPostHandler,
+    options: {
+      auth: "jwt",
+    },
+  },
+  {
+    method: "GET",
+    path: "/posts",
+    handler: getAllPostHandler,
+    options: {
+      auth: "jwt",
+    },
   }
 ];
 
