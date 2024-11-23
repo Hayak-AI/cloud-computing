@@ -1,6 +1,6 @@
 const { registerHandler } = require('./auth/register');
 const { loginHandler } = require('./auth/login');
-const { uploadProfilePhotoHandler } = require('./user/postUser');
+const { uploadProfilePhotoHandler } = require('./user/uploadProfile');
 const { updateUserHandler } = require('./user/putUser');
 const { getProfileHandler } = require('./user/getUser');
 const { getPreferences } = require('./preferences/getPreferences');
@@ -10,7 +10,7 @@ const { getContactsHandler } = require('./contacts/getContacts');
 const { updateContactsHandler } = require('./contacts/putContacts');
 const { deleteContactsHandler } = require('./contacts/deleteContacts');
 const { getEmergenciesHandler } = require('./emergencies/getEmergencies');
-const { markUserInDangerHandler } = require('./emergencies/postEmergencies');
+const { postEmergenciesHandler } = require('./emergencies/postEmergencies');
 
 const routes = [
     {
@@ -28,7 +28,7 @@ const routes = [
         path: '/users',
         handler: updateUserHandler,  
         options: {
-            auth: false,  
+            auth: 'jwt',  
         }
     },
     {
@@ -36,21 +36,21 @@ const routes = [
         path: '/users/upload-profile-photo',
         handler: uploadProfilePhotoHandler,  
         options: {
-            auth: false,  
+            auth: 'jwt',  
             payload: {
                 maxBytes: 1024 * 1024 * 5,  
                 output: 'stream', 
                 parse: true,
                 multipart: true
             }
-        }
+        },
     },
     {
         method: 'GET',
         path: '/users/me',
         handler: getProfileHandler,
         options: {
-            auth: false,
+            auth: 'jwt',
         },
     },
     {
@@ -58,7 +58,7 @@ const routes = [
         path: '/preferences',
         handler: getPreferences,
         options: {
-            auth: false,
+            auth: 'jwt',
         },
     },
     {
@@ -66,7 +66,7 @@ const routes = [
         path: '/preferences',
         handler: postPreferences,
         options: {
-            auth: false,
+            auth: 'jwt',
         },
     },
     {
@@ -74,7 +74,7 @@ const routes = [
         path: '/contacts',
         handler: addContactsHandler,
         options: {
-            auth: false,
+            auth: 'jwt',
         },
     },
     {
@@ -82,7 +82,7 @@ const routes = [
         path: '/contacts',
         handler: getContactsHandler,
         options: {
-            auth: false,
+            auth: 'jwt',
         },
     },
     {
@@ -90,7 +90,7 @@ const routes = [
         path: '/contacts',
         handler: updateContactsHandler,
         options: {
-            auth: false,
+            auth: 'jwt',
         },
     },
     {
@@ -98,7 +98,7 @@ const routes = [
         path: '/contacts',
         handler: deleteContactsHandler,
         options: {
-            auth: false,
+            auth: 'jwt',
         },
     },
     {
@@ -106,17 +106,17 @@ const routes = [
         path: '/emergencies',
         handler: getEmergenciesHandler,
         options: {
-            auth: false,
+            auth: 'jwt',
         },
     },
     {
         method: 'POST',
         path: '/emergencies',
-        handler: markUserInDangerHandler,
+        handler: postEmergenciesHandler,
         options: {
-            auth: false,
+            auth: 'jwt',
         },
-    }
+    },
 ];
 
 module.exports = routes;

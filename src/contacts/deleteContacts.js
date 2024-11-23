@@ -1,43 +1,28 @@
-require('dotenv').config();
 const pool = require('../database');
-const jwt = require('jsonwebtoken');
+const Joi = require('joi');
+
+const schema = Joi.object({
+    contact_id: Joi.number().integer().required(),
+});
 
 const deleteContactsHandler = async (request, h) => {
-    const authorizationHeader = request.headers['authorization'];
 
-    if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
-        return h.response({
-            status: 'fail',
-            message: 'Anda tidak memiliki akses',
-        }).code(401);
-    }
-
-    const token = authorizationHeader.replace('Bearer ', '');
-
-    // Verifikasi token
-    let decodedToken;
-    try {
-        decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (error) {
-        return h.response({
-            status: 'fail',
-            message: 'Token tidak valid',
-        }).code(401);
-    }
+    const userId = request.auth.artifacts.decoded.payload.user.id
 
     const { contact_id } = request.payload;
 
-    if (!contact_id) {
+    const { error } = schema.validate({ contact_id });
+    if (error) {
         return h.response({
             status: 'fail',
-            message: 'Kontak yang Anda masukkan salah',
+            message: 'Data yang Anda masukkan salah',
         }).code(400);
     }
 
     try {
         const [result] = await pool.query(
             'DELETE FROM contacts WHERE id = ? AND user_id = ?',
-            [contact_id, decodedToken.user.id]
+            [contact_id, userId]
         );
 
         if (result.affectedRows === 0) {

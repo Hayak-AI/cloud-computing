@@ -1,34 +1,9 @@
-require('dotenv').config();
 const pool = require('../database');
-const jwt = require('jsonwebtoken');
-
 
 const getProfileHandler = async (request, h) => {
-    const authorizationHeader = request.headers['authorization'];
+    const userId = request.auth.artifacts.decoded.payload.user.id
 
-
-    if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
-        return h.response({
-            status: 'fail',
-            message: 'Anda tidak memiliki akses',
-        }).code(401);
-    }
-
-    const token = authorizationHeader.replace('Bearer ', '');
-
-
-    let decodedToken;
-    try {
-        decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (error) {
-        return h.response({
-            status: 'fail',
-            message: 'Token tidak valid',
-        }).code(401);
-    }
-
-
-    const [rows] = await pool.query('SELECT * FROM users WHERE id = ?', [decodedToken.user.id]);
+    const [rows] = await pool.query('SELECT * FROM users WHERE id = ?', [userId]);
 
     if (rows.length === 0) {
         return h.response({
