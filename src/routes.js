@@ -11,7 +11,11 @@ const { updateContactsHandler } = require('./contacts/putContacts');
 const { deleteContactsHandler } = require('./contacts/deleteContacts');
 const { getEmergenciesHandler } = require('./emergencies/getEmergencies');
 const { postEmergenciesHandler } = require('./emergencies/postEmergencies');
-
+const { addCommentHandler } = require('./communityComments/postComment');
+const { postMapsReportHandler} = require('./mapsReport/postMaps');
+const { createPostHandler} = require('./community/postCommunity');
+const { getCommentsHandler} = require('./communityComments/getComment');
+const { deleteCommentHandler} = require('./communityComments/deleteComment');
 const routes = [
     {
         method: 'POST',
@@ -113,6 +117,54 @@ const routes = [
         method: 'POST',
         path: '/emergencies',
         handler: postEmergenciesHandler,
+        options: {
+            auth: 'jwt',
+        },
+    },
+    {
+        method: 'POST',
+        path: '/comments',
+        handler: addCommentHandler,
+        options: {
+            auth: 'jwt',
+        },
+    },
+    {
+        method: 'POST',
+        path: '/maps-report',
+        handler: postMapsReportHandler,
+        options: {
+            auth: 'jwt',
+        },
+    },
+    {
+        method: 'POST',
+        path: '/posts',
+        handler: createPostHandler,
+        options: {
+            auth: 'jwt',
+        },
+    },
+    {
+        method: 'GET',
+        path: '/post/{id}/comments',
+        handler: getCommentsHandler,
+        options: {
+            auth: 'jwt',
+        },
+    },
+    {
+        method: 'GET',
+        path: '/report/{id}/comments',
+        handler: getCommentsHandler,
+        options: {
+            auth: 'jwt',
+        },
+    },
+    {
+        method: 'DELETE',
+        path: '/comments',
+        handler: deleteCommentHandler,
         options: {
             auth: 'jwt',
         },
