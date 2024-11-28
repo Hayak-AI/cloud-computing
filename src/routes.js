@@ -1,6 +1,6 @@
 const { registerHandler } = require("./auth/register");
 const { loginHandler } = require("./auth/login");
-const { uploadProfilePhotoHandler } = require("./user/uploadProfile");
+const { uploadProfilePhotoHandler } = require("./user/uploadPhotoProfile");
 const { updateUserHandler } = require("./user/putUser");
 const { getProfileHandler } = require("./user/getUser");
 const { getPreferences } = require("./preferences/getPreferences");
