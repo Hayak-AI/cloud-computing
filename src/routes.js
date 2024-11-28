@@ -59,10 +59,24 @@ const routes = [
     },
   },
   {
-    method: "GET",
-    path: "/preferences",
-    handler: getPreferences,
-    options: {
+        method: 'POST',  
+        path: '/users/upload-profile-photo',
+        handler: uploadProfilePhotoHandler,  
+        options: {
+            auth: 'jwt',  
+            payload: {
+                maxBytes: 1024 * 1024 * 5,  
+                output: 'stream', 
+                parse: true,
+                multipart: true
+            }
+        },
+     },
+    {
+      method: "GET",
+      path: "/preferences",
+      handler: getPreferences,
+      options: {
       auth: "jwt",
     },
   },
@@ -114,22 +128,23 @@ const routes = [
       auth: "jwt",
     },
   },
-  {
-    method: "POST",
-    path: "/emergencies",
-    handler: postEmergenciesHandler,
-    options: {
-      auth: "jwt",
+    {
+        method: 'POST',
+        path: '/emergencies',
+        handler: postEmergenciesHandler,
+        options: {
+            auth: 'jwt',
+        },
     },
   },
-  {
+   {
     method: "POST",
     path: "/maps-report",
     handler: postMapsReportHandler,
     options: {
       auth: "jwt",
     },
-  },
+   },
   {
     method: "GET",
     path: "/maps-report",
