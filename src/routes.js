@@ -21,6 +21,10 @@ const { getPostHandler } = require("./comunityPost/postGet");
 const { updatePostHandler } = require("./comunityPost/postUpdate");
 const { deleteComPostHandler } = require("./comunityPost/postDelete");
 const { getAllPostHandler } = require("./comunityPost/allpostGet");
+const { addCommentHandler } = require('./communityComments/postComment');
+const { getCommentsHandler} = require('./communityComments/getComment');
+const { deleteCommentHandler} = require('./communityComments/deleteComment');
+
 
 const routes = [
   {
@@ -33,15 +37,8 @@ const routes = [
     path: "/login",
     handler: loginHandler,
   },
-  {
-    method: "PUT",
-    path: "/users",
-    handler: updateUserHandler,
-    options: {
-      auth: "jwt",
-    },
   },
-  {
+   {
     method: "POST",
     path: "/users/upload-profile-photo",
     handler: uploadProfilePhotoHandler,
@@ -56,6 +53,15 @@ const routes = [
     },
   },
   {
+    
+    method: "PUT",
+    path: "/users",
+    handler: updateUserHandler,
+    options: {
+      auth: "jwt",
+    },
+  },
+  {
     method: "GET",
     path: "/users/me",
     handler: getProfileHandler,
@@ -63,20 +69,6 @@ const routes = [
       auth: "jwt",
     },
   },
-  {
-        method: 'POST',  
-        path: '/users/upload-profile-photo',
-        handler: uploadProfilePhotoHandler,  
-        options: {
-            auth: 'jwt',  
-            payload: {
-                maxBytes: 1024 * 1024 * 5,  
-                output: 'stream', 
-                parse: true,
-                multipart: true
-            }
-        },
-     },
     {
       method: "GET",
       path: "/preferences",
@@ -137,6 +129,39 @@ const routes = [
         method: 'POST',
         path: '/emergencies',
         handler: postEmergenciesHandler,
+        options: {
+            auth: 'jwt',
+        },
+    },
+
+    {
+        method: 'POST',
+        path: '/comments',
+        handler: addCommentHandler,
+        options: {
+            auth: 'jwt',
+        },
+    },
+    {
+        method: 'GET',
+        path: '/post/{id}/comments',
+        handler: getCommentsHandler,
+        options: {
+            auth: 'jwt',
+        },
+    },
+    {
+        method: 'GET',
+        path: '/report/{id}/comments',
+        handler: getCommentsHandler,
+        options: {
+            auth: 'jwt',
+        },
+    },
+    {
+        method: 'DELETE',
+        path: '/comments',
+        handler: deleteCommentHandler,
         options: {
             auth: 'jwt',
         },

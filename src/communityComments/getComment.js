@@ -1,0 +1,79 @@
+const pool = require('../database');
+
+const getCommentsHandler = async (request, h) => {
+    const userId = request.auth.artifacts.decoded.payload.user.id
+    if (!userId) {
+        return h.response({
+            status: 'fail',
+            message: 'Anda tidak memiliki akses',
+        }).code(401);
+    }
+
+    const postId = request.params.id; 
+    const reportId = request.params.id; 
+
+    try {
+        const [comments] = await pool.query(
+            `SELECT c.comment_id, c.content, c.created_at,
+            u.id as user_id, u.profile_photo, u.name, 
+            c.report_id, c.post_id
+            FROM comments c
+            JOIN users u ON c.user_id = u.id
+            WHERE c.report_id = ? OR c.post_id = ?
+            ORDER BY c.created_at DESC`,
+            [reportId, postId]
+        );
+
+        if (comments.length === 0) {
+            return h.response({
+                status: 'fail',
+                message: 'Tidak ada komentar untuk postingan ini',
+            }).code(404);
+        }
+
+        let responseData;
+        if (reportId) {
+            responseData = comments
+                .filter(comment => comment.report_id == reportId)
+                .map(comment => ({
+                    report_id: reportId,
+                    comment_id: comment.comment_id,
+                    content: comment.content,
+                    created_at: comment.created_at,
+                    user: {
+                        id: comment.user_id,
+                        profile_photo: comment.profile_photo,
+                        name: comment.name,
+                    },
+                }));
+        } else if (postId) {
+            responseData = comments
+                .filter(comment => comment.post_id == postId)
+                .map(comment => ({
+                    post_id: postId,
+                    comment_id: comment.comment_id,
+                    content: comment.content,
+                    created_at: comment.created_at,
+                    user: {
+                        id: comment.user_id,
+                        profile_photo: comment.profile_photo,
+                        name: comment.name,
+                    },
+                }));
+        }
+
+        return h.response({
+            status: 'success',
+            data: responseData,
+        }).code(200);
+    } catch (err) {
+        console.error('Database query error:', err);
+
+        return h.response({
+            status: 'error',
+            message: 'Terjadi kesalahan pada server',
+        }).code(500);
+    }
+};
+
+module.exports = { getCommentsHandler };
