@@ -1,34 +1,31 @@
-const pool = require('../database');
 const Joi = require('joi');
+const pool = require('../database');
 
-const schema = Joi.object({
-    contact_id: Joi.number().integer().required(),
-});
-
-const deleteContactsHandler = async (request, h) => {
-
+const deleteMapReportHandler = async (request, h) => {
     const userId = request.auth.artifacts.decoded.payload.user.id
 
-    const { contact_id } = request.payload;
+    const schema = Joi.object({
+        report_id: Joi.number().integer().required(),
+    });
 
-    const { error } = schema.validate({ contact_id });
+    const { error, value } = schema.validate(request.payload);
+
     if (error) {
         return h.response({
             status: 'fail',
-            message: 'Data yang Anda masukkan salah',
+            message: 'Lokasi yang Anda masukkan salah',
         }).code(400);
     }
 
+    const { report_id } = value;
+
     try {
-        const [result] = await pool.query(
-            'DELETE FROM contacts WHERE id = ? AND user_id = ?',
-            [contact_id, userId]
-        );
+        const result = await pool.query('DELETE FROM reports WHERE id = ?', [report_id, userId]);
 
         if (result.affectedRows === 0) {
             return h.response({
                 status: 'fail',
-                message: 'Kontak tidak ditemukan atau Anda tidak memiliki akses',
+                message: 'Laporan tidak ditemukan',
             }).code(404);
         }
 
@@ -44,4 +41,4 @@ const deleteContactsHandler = async (request, h) => {
     }
 };
 
-module.exports = { deleteContactsHandler };
+module.exports = { deleteMapReportHandler };

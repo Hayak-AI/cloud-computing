@@ -1,32 +1,13 @@
-require('dotenv').config();
 const pool = require('../database');
-const jwt = require('jsonwebtoken');
+const Joi = require('joi');
 
 const getContactsHandler = async (request, h) => {
-    const authorizationHeader = request.headers['authorization'];
-
-    if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
-        return h.response({
-            status: 'fail',
-            message: 'Anda tidak memiliki akses',
-        }).code(401);
-    }
-
-    const token = authorizationHeader.replace('Bearer ', '');
-
-    let decodedToken;
-    try {
-        decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (error) {
-        return h.response({
-        status: 'fail',
-        message: 'Anda tidak memiliki akses'
-        }).code(401);
-    }
+    const userId = request.auth.artifacts.decoded.payload.user.id
 
     try {
+        // Query untuk mendapatkan kontak darurat
         const query = 'SELECT * FROM contacts WHERE user_id = ?';
-        const [rows] = await pool.execute(query, [decodedToken.user.id]);
+        const [rows] = await pool.execute(query, [userId]);
 
         if (rows.length === 0) {
             return h.response({
@@ -35,13 +16,13 @@ const getContactsHandler = async (request, h) => {
             }).code(404);
         }
 
-        // Kembalikan data dalam format yang sesuai
+        // Format data kontak
         const contacts = rows.map(contact => ({
             contact_id: contact.id,
             name: contact.contact_name,
             phone: contact.contact_phone,
             email: contact.contact_email,
-            notify: contact.notify === 1, 
+            notify: contact.notify === 1,
             message: contact.message,
         }));
 
