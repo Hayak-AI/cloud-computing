@@ -55,4 +55,4 @@ const createPostHandler = async (request, h) => {
     }
 }
 
-module.exports = { createPostHandler };
+module.exports = { createPostHandler };

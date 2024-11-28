@@ -1,6 +1,6 @@
 const { registerHandler } = require("./auth/register");
 const { loginHandler } = require("./auth/login");
-const { uploadProfilePhotoHandler } = require("./user/postUser");
+const { uploadProfilePhotoHandler } = require("./user/uploadProfile");
 const { updateUserHandler } = require("./user/putUser");
 const { getProfileHandler } = require("./user/getUser");
 const { getPreferences } = require("./preferences/getPreferences");
@@ -22,7 +22,7 @@ const { updatePostHandler } = require("./comunityPost/postUpdate");
 const { deleteComPostHandler } = require("./comunityPost/postDelete");
 const { getAllPostHandler } = require("./comunityPost/allpostGet");
 const { addCommentHandler } = require('./communityComments/postComment');
-const { getCommentsHandler} = require('./communityComments/getComment');
+const { getPostCommentsHandler, getReportCommentsHandler} = require('./communityComments/getComment');
 const { deleteCommentHandler} = require('./communityComments/deleteComment');
 
 
@@ -36,7 +36,6 @@ const routes = [
     method: "POST",
     path: "/login",
     handler: loginHandler,
-  },
   },
    {
     method: "POST",
@@ -145,7 +144,7 @@ const routes = [
     {
         method: 'GET',
         path: '/post/{id}/comments',
-        handler: getCommentsHandler,
+        handler: getPostCommentsHandler,
         options: {
             auth: 'jwt',
         },
@@ -153,7 +152,7 @@ const routes = [
     {
         method: 'GET',
         path: '/report/{id}/comments',
-        handler: getCommentsHandler,
+        handler: getReportCommentsHandler,
         options: {
             auth: 'jwt',
         },
@@ -166,7 +165,6 @@ const routes = [
             auth: 'jwt',
         },
     },
-  },
    {
     method: "POST",
     path: "/maps-report",

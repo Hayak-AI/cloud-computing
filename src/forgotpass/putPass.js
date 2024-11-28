@@ -46,7 +46,8 @@ const resetPasswordHandler = async (request, h) => {
         console.error(err);
         return h.response({
             status: 'fail',
-            message: 'Token tidak valid atau terjadi kesalahan'
+            message: 'Token tidak valid atau terjadi kesalahan',
+            error: err
         }).code(400);
     }
 }
