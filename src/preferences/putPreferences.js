@@ -7,7 +7,7 @@ const schema = Joi.object({
     location_tracking: Joi.boolean().required(),
 });
 
-const postPreferences = async (req, res) => {
+const putPreferences = async (req, res) => {
 
     const userId = req.auth.artifacts.decoded.payload.user.id
     const { voice_detection, dark_mode, location_tracking } = req.payload;
@@ -60,5 +60,5 @@ const postPreferences = async (req, res) => {
 };
 
 module.exports = {
-    postPreferences,
+    putPreferences,
 };

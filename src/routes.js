@@ -4,7 +4,7 @@ const { uploadProfilePhotoHandler } = require("./user/uploadProfile");
 const { updateUserHandler } = require("./user/putUser");
 const { getProfileHandler } = require("./user/getUser");
 const { getPreferences } = require("./preferences/getPreferences");
-const { postPreferences } = require("./preferences/postPreferences");
+const { putPreferences } = require("./preferences/putPreferences");
 const { addContactsHandler } = require("./contacts/postContacts");
 const { getContactsHandler } = require("./contacts/getContacts");
 const { updateContactsHandler } = require("./contacts/putContacts");
@@ -79,7 +79,7 @@ const routes = [
   {
     method: "PUT",
     path: "/preferences",
-    handler: postPreferences,
+    handler: putPreferences,
     options: {
       auth: "jwt",
     },
