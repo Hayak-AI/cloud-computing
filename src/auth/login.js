@@ -57,10 +57,6 @@ const loginHandler = async (request, h) => {
             { expiresIn: process.env.JWT_EXPIRES_IN }
         );
 
-        // Simpan access token ke tabel tokens
-        const tokenQuery = 'INSERT INTO tokens (token, created_at) VALUES (?, NOW())';
-        await pool.query(tokenQuery, [accessToken]);
-
         return h.response({
             status: 'success',
             data: {

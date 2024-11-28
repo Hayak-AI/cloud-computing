@@ -77,7 +77,7 @@ const routes = [
     },
   },
   {
-    method: "POST",
+    method: "PUT",
     path: "/preferences",
     handler: postPreferences,
     options: {

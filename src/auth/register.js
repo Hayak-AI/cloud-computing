@@ -23,12 +23,24 @@ const registerHandler = async (request, h) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Simpan pengguna ke database
     try {
-        await pool.query(
+        const [userRows] = await pool.query(
             'INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)',
             [name, email, hashedPassword]
         );
+
+        const userId = userRows.insertId;
+
+        const preferencesQuery = `
+            INSERT INTO preferences (user_id, voice_detection, dark_mode, location_tracking)
+            VALUES (?, ?, ?, ?)
+        `;
+        await pool.query(preferencesQuery, [
+            userId,
+            false, 
+            false, 
+            false  
+        ]);
 
         return h.response({
             status: 'success',
