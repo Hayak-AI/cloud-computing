@@ -22,7 +22,8 @@ const getPostCommentsHandler = async (request, h) => {
             ORDER BY c.created_at DESC`,
             [postId]
         );
-
+ 
+        console.log (comments)
         if (comments.length === 0) {
             return h.response({
                 status: 'fail',
@@ -42,6 +43,7 @@ const getPostCommentsHandler = async (request, h) => {
                 profile_photo: comment.profile_photo,
                 name: comment.name,
             },
+            by_me: comment.user_id === userId,
         }));
         
         return h.response({
@@ -70,7 +72,7 @@ const getReportCommentsHandler = async (request, h) => {
     const reportId = request.params.id; 
 
     try {
-        const [comments] = await pool.query(
+        const comments = await pool.query(
             `SELECT c.comment_id, c.content, c.created_at,
             u.id as user_id, u.profile_photo, u.name, 
             c.report_id
@@ -100,6 +102,7 @@ const getReportCommentsHandler = async (request, h) => {
                 profile_photo: comment.profile_photo,
                 name: comment.name,
             },
+            by_me: comment.user_id === userId,
         }));
 
         return h.response({
