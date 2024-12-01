@@ -23,7 +23,6 @@ const getPostCommentsHandler = async (request, h) => {
             [postId]
         );
  
-        console.log (comments)
         if (comments.length === 0) {
             return h.response({
                 status: 'fail',

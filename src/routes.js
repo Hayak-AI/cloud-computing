@@ -12,6 +12,7 @@ const { deleteContactsHandler } = require("./contacts/deleteContacts");
 const { getEmergenciesHandler } = require("./emergencies/getEmergencies");
 const { postEmergenciesHandler } = require("./emergencies/postEmergencies");
 const { postMapsReportHandler } = require("./maps/postMaps");
+const { uploadEvidenceHandler } = require("./maps/uploadEvidence");
 const { getMapsHandler } = require("./maps/getMaps");
 const { deleteMapReportHandler } = require("./maps/delMaps");
 const { forgotPasswordHandler } = require("./forgotpass/postPass");
@@ -148,6 +149,20 @@ const routes = [
         options: {
             auth: 'jwt',
         },
+    },
+    {
+      method: "POST",
+      path: "/maps-report/upload-evidence",
+      handler: uploadEvidenceHandler,
+      options: {
+        auth: "jwt",
+        payload: {
+          maxBytes: 1024 * 1024 * 5,
+          output: "stream",
+          parse: true,
+          multipart: true,
+        },
+      },
     },
     {
         method: 'GET',
