@@ -24,6 +24,14 @@ const registerHandler = async (request, h) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     try {
+        const [existingUser] = await pool.query('SELECT id FROM users WHERE email = ?', [email]);
+        if (existingUser.length > 0) {
+            return h.response({
+                status: 'fail',
+                message: 'Email sudah terdaftar',
+            }).code(400);
+        }
+        
         const [userRows] = await pool.query(
             'INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)',
             [name, email, hashedPassword]
