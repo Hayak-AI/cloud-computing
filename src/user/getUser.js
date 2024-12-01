@@ -17,6 +17,7 @@ const getProfileHandler = async (request, h) => {
     return h.response({
         status: 'success',
         data: {
+            userId: user.id,
             name: user.name,
             email: user.email,
             profile_photo: user.profile_photo,
