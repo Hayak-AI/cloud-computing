@@ -22,6 +22,7 @@ const addContactsHandler = async (request, h) => {
     }
 
     try {
+
         await pool.query('INSERT INTO contacts (user_id, contact_name, contact_phone, contact_email, message) VALUES (?, ?, ?, ?, ?)', 
             [userId, name, phone, email, message]);
 

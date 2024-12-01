@@ -3,6 +3,7 @@ const Joi = require('joi');
 
 const getContactsHandler = async (request, h) => {
     const userId = request.auth.artifacts.decoded.payload.user.id
+    const { notify } = request.query;
 
     try {
         // Query untuk mendapatkan kontak darurat
@@ -22,7 +23,7 @@ const getContactsHandler = async (request, h) => {
             name: contact.contact_name,
             phone: contact.contact_phone,
             email: contact.contact_email,
-            notify: contact.notify === 1,
+            notify: notify === 'true' ? true : notify === 'false' ? false : contact.notify === 1,
             message: contact.message,
         }));
 

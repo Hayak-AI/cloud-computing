@@ -8,16 +8,16 @@ const getPostHandler = async (request, h) => {
     try {
         // Query untuk mendapatkan postingan berdasarkan post_id
         const [postResult] = await pool.query(
-            'SELECT p.post_id, p.title, p.content, p.category, p.created_at, p.updated_at, u.id as user_id, u.name as user_name, u.profile_photo, m.location_name, m.latitude, m.longitude ' +
-            'FROM posts p ' +
-            'JOIN users u ON p.user_id = u.id ' +
-            'LEFT JOIN maps m ON p.location_id = m.id ' +
-            'WHERE p.post_id = ?',
+            `SELECT p.post_id, p.title, p.content, p.category, p.created_at, p.updated_at, 
+            u.id as user_id, u.name as user_name, u.profile_photo, 
+            m.location_name, m.latitude, m.longitude,
+            (SELECT COUNT(*) FROM comments WHERE post_id = p.post_id) AS total_comments
+            FROM posts p
+            JOIN users u ON p.user_id = u.id
+            LEFT JOIN maps m ON p.location_id = m.id
+            WHERE p.post_id = ?`,
             [postId]
         );
-
-        // Debugging: Log hasil query
-        console.log('Post Result:', postResult);
 
         if (postResult.length === 0) {
             return h.response({
@@ -37,6 +37,7 @@ const getPostHandler = async (request, h) => {
                 category: post.category,
                 created_at: post.created_at,
                 updated_at: post.updated_at,
+                by_me: post.user_id === userId,
                 user: {
                     id: post.user_id,
                     name: post.user_name,
@@ -46,8 +47,9 @@ const getPostHandler = async (request, h) => {
                     name: post.location_name,
                     latitude: post.latitude,
                     longitude: post.longitude
-                } : null
-            }
+                } : null,
+                total_comments: post.total_comments || 0
+            },
         };
 
         return h.response(response).code(200);
