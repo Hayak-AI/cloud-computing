@@ -12,9 +12,9 @@ const schema = Joi.object({
 const updateUserHandler = async (request, h) => {
     const userId = request.auth.artifacts.decoded.payload.user.id
     const { name, profile_photo, phone_number } = request.payload;
-
-    const { error } = schema.validate({ name, profile_photo, phone_number });
-    if (error) {
+  
+        const { error } = schema.validate({ name, profile_photo, phone_number });
+         if (error) {
         return h.response({
             status: 'fail',
             message: 'Data yang Anda masukkan salah',
