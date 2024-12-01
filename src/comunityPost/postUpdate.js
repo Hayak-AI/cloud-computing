@@ -15,7 +15,7 @@ const validatePostSchema = Joi.object({
 });
 
 const updatePostHandler = async (request, h) => {
-    const userId = request.auth.artifacts.decoded.payload.user.id
+  const userId = request.auth.artifacts.decoded.payload.user.id;
 
   // Validasi body menggunakan Joi
   const { payload } = request;
@@ -34,7 +34,10 @@ const updatePostHandler = async (request, h) => {
 
   try {
     // Check apakah post_id ada
-    const [postExists] = await pool.query('SELECT * FROM posts WHERE post_id = ?', [post_id]);
+    const [postExists] = await pool.query(
+      'SELECT * FROM posts WHERE post_id = ? AND user_id = ?',
+      [post_id, userId],
+    );
     if (postExists.length === 0) {
       return h
         .response({
@@ -49,15 +52,22 @@ const updatePostHandler = async (request, h) => {
     if (location) {
       const [locationResult] = await pool.query(
         'INSERT INTO maps (location_name, latitude, longitude) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE location_name = VALUES(location_name), latitude = VALUES(latitude), longitude = VALUES(longitude)',
-        [location.name, location.latitude, location.longitude]
+        [location.name, location.latitude, location.longitude],
       );
       location_id = locationResult.insertId || location_id;
     }
 
     // Update postingan
     await pool.query(
-      'UPDATE posts SET title = ?, content = ?, category = ?, location_id = ?, updated_at = NOW() WHERE post_id = ?',
-      [title || postExists[0].title, content || postExists[0].content, category || postExists[0].category, location_id, post_id]
+      'UPDATE posts SET title = ?, content = ?, category = ?, location_id = ?, updated_at = NOW() WHERE post_id = ? AND user_id = ?',
+      [
+        title || postExists[0].title,
+        content || postExists[0].content,
+        category || postExists[0].category,
+        location_id,
+        post_id,
+        userId,
+      ],
     );
 
     return h

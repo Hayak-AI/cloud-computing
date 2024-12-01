@@ -1,5 +1,5 @@
-const pool = require("../database");
-const Joi = require("joi");
+const pool = require('../database');
+const Joi = require('joi');
 
 const schema = Joi.object({
   post_id: Joi.number().integer().required(),
@@ -15,8 +15,8 @@ const deleteComPostHandler = async (request, h) => {
   if (error) {
     return h
       .response({
-        status: "fail",
-        message: "Postingan yang Anda masukkan salah",
+        status: 'fail',
+        message: 'Postingan yang Anda masukkan salah',
       })
       .code(400);
   }
@@ -30,16 +30,16 @@ const deleteComPostHandler = async (request, h) => {
 
       // Ambil `location_id` terkait post
       const [postResult] = await connection.query(
-        "SELECT location_id FROM posts WHERE post_id = ? AND user_id = ?",
-        [post_id, userId]
+        'SELECT location_id FROM posts WHERE post_id = ? AND user_id = ?',
+        [post_id, userId],
       );
 
       if (postResult.length === 0) {
         await connection.rollback();
         return h
           .response({
-            status: "fail",
-            message: "Postingan tidak ditemukan!",
+            status: 'fail',
+            message: 'Postingan tidak ditemukan!',
           })
           .code(400);
       }
@@ -48,23 +48,23 @@ const deleteComPostHandler = async (request, h) => {
 
       // Hapus data dari tabel `posts`
       const [deletePostResult] = await connection.query(
-        "DELETE FROM posts WHERE post_id = ? AND user_id = ?",
-        [post_id, userId]
+        'DELETE FROM posts WHERE post_id = ? AND user_id = ?',
+        [post_id, userId],
       );
 
       if (deletePostResult.affectedRows === 0) {
         await connection.rollback();
         return h
           .response({
-            status: "fail",
-            message: "Gagal menghapus postingan",
+            status: 'fail',
+            message: 'Gagal menghapus postingan',
           })
           .code(400);
       }
 
       // Hapus data dari tabel `maps` jika `location_id` valid
       if (locationId) {
-        await connection.query("DELETE FROM maps WHERE id = ?", [locationId]);
+        await connection.query('DELETE FROM maps WHERE id = ?', [locationId]);
       }
 
       // Commit transaksi
@@ -72,28 +72,28 @@ const deleteComPostHandler = async (request, h) => {
 
       return h
         .response({
-          status: "success",
+          status: 'success',
         })
         .code(201);
     } catch (error) {
       // Rollback transaksi jika terjadi kesalahan
       await connection.rollback();
-      console.error("Transaction error:", error);
+      console.error('Transaction error:', error);
       return h
         .response({
-          status: "error",
-          message: "Terjadi kesalahan pada server",
+          status: 'error',
+          message: 'Terjadi kesalahan pada server',
         })
         .code(500);
     } finally {
       connection.release();
     }
   } catch (error) {
-    console.error("Database connection error:", error);
+    console.error('Database connection error:', error);
     return h
       .response({
-        status: "error",
-        message: "Terjadi kesalahan pada server",
+        status: 'error',
+        message: 'Terjadi kesalahan pada server',
       })
       .code(500);
   }

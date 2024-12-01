@@ -1,11 +1,6 @@
-require('dotenv').config();
 const path = require('path');
 const Joi = require('joi');
 const { Storage } = require('@google-cloud/storage');
-
-const schema = Joi.object({
-  file: Joi.object().required(),
-});
 
 const storage = new Storage({
   projectId: process.env.GCLOUD_PROJECT_ID,
@@ -15,7 +10,11 @@ const storage = new Storage({
 const bucketName = process.env.GCLOUD_BUCKET_NAME;
 const bucket = storage.bucket(bucketName);
 
-const uploadProfilePhotoHandler = async (request, h) => {
+const uploadEvidenceHandler = async (request, h) => {
+  const schema = Joi.object({
+    file: Joi.object().required(),
+  });
+
   try {
     const userId = request.auth.artifacts.decoded.payload.user.id;
     const { file } = request.payload;
@@ -31,7 +30,7 @@ const uploadProfilePhotoHandler = async (request, h) => {
     }
 
     const blob = bucket.file(
-      `profile-photos/${userId}-${Date.now()}-${file.hapi.filename}`,
+      `evidence/${userId}-${Date.now()}-${file.hapi.filename}`,
     );
     const blobStream = blob.createWriteStream({
       resumable: false,
@@ -65,10 +64,10 @@ const uploadProfilePhotoHandler = async (request, h) => {
     return h
       .response({
         status: 'fail',
-        message: 'Terjadi kesalahan saat mengunggah foto profil',
+        message: 'Terjadi kesalahan saat mengunggah bukti laporan',
       })
       .code(500);
   }
 };
 
-module.exports = { uploadProfilePhotoHandler };
+module.exports = { uploadEvidenceHandler };
