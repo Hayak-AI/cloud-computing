@@ -1,4 +1,4 @@
-const pool = require("../database");
+const pool = require('../database');
 
 const getAllPostHandler = async (request, h) => {
   const userId = request.auth.artifacts.decoded.payload.user.id;
@@ -16,10 +16,10 @@ const getAllPostHandler = async (request, h) => {
          JOIN users u ON p.user_id = u.id 
          LEFT JOIN maps m ON p.location_id = m.id 
          LEFT JOIN comments c ON p.post_id = c.post_id 
-         GROUP BY p.post_id`
+         GROUP BY p.post_id`,
       );
     } else {
-      if (from === "me") {
+      if (from === 'me') {
         [postResult] = await pool.query(
           `SELECT p.post_id, p.title, p.content, p.category, p.created_at, p.updated_at, 
                   u.id as user_id, u.name as user_name, u.profile_photo, 
@@ -31,7 +31,7 @@ const getAllPostHandler = async (request, h) => {
            LEFT JOIN comments c ON p.post_id = c.post_id 
            WHERE p.user_id = ? 
            GROUP BY p.post_id`,
-          [userId]
+          [userId],
         );
       } else {
         [postResult] = await pool.query(
@@ -45,7 +45,7 @@ const getAllPostHandler = async (request, h) => {
         LEFT JOIN comments c ON p.post_id = c.post_id 
         WHERE p.user_id = ? 
         GROUP BY p.post_id`,
-        [from]
+          [from],
         );
       }
     }
@@ -53,8 +53,8 @@ const getAllPostHandler = async (request, h) => {
     if (postResult.length === 0) {
       return h
         .response({
-          status: "fail",
-          message: "Postingan tidak ditemukan",
+          status: 'fail',
+          message: 'Postingan tidak ditemukan',
         })
         .code(404);
     }
@@ -83,17 +83,17 @@ const getAllPostHandler = async (request, h) => {
     }));
 
     const response = {
-      status: "success",
+      status: 'success',
       data: posts,
     };
 
     return h.response(response).code(200);
   } catch (err) {
-    console.error("Error:", err);
+    console.error('Error:', err);
     return h
       .response({
-        status: "fail",
-        message: "Terjadi kesalahan pada server",
+        status: 'fail',
+        message: 'Terjadi kesalahan pada server',
       })
       .code(500);
   }

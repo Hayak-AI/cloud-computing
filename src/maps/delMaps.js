@@ -1,5 +1,5 @@
-const Joi = require("joi");
-const pool = require("../database");
+const Joi = require('joi');
+const pool = require('../database');
 
 const deleteMapReportHandler = async (request, h) => {
   const userId = request.auth.artifacts.decoded.payload.user.id;
@@ -13,8 +13,8 @@ const deleteMapReportHandler = async (request, h) => {
   if (error) {
     return h
       .response({
-        status: "fail",
-        message: "Lokasi yang Anda masukkan salah",
+        status: 'fail',
+        message: 'Lokasi yang Anda masukkan salah',
       })
       .code(400);
   }
@@ -23,30 +23,30 @@ const deleteMapReportHandler = async (request, h) => {
 
   try {
     const [result] = await pool.query(
-      "DELETE FROM reports WHERE id = ? AND user_id = ?",
-      [report_id, userId]
+      'DELETE FROM reports WHERE id = ? AND user_id = ?',
+      [report_id, userId],
     );
 
     if (result.affectedRows === 0) {
       return h
         .response({
-          status: "fail",
-          message: "Laporan tidak ditemukan",
+          status: 'fail',
+          message: 'Laporan tidak ditemukan',
         })
         .code(404);
     }
 
     return h
       .response({
-        status: "success",
+        status: 'success',
       })
       .code(201);
   } catch (error) {
-    console.error("Database query error:", error);
+    console.error('Database query error:', error);
     return h
       .response({
-        status: "error",
-        message: "Terjadi kesalahan pada server",
+        status: 'error',
+        message: 'Terjadi kesalahan pada server',
       })
       .code(500);
   }
