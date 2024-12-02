@@ -81,14 +81,14 @@ const getReportCommentsHandler = async (request, h) => {
   const reportId = request.params.id;
 
   try {
-    const comments = await pool.query(
+    const [comments] = await pool.query(
       `SELECT c.comment_id, c.content, c.created_at,
-            u.id as user_id, u.profile_photo, u.name, 
-            c.report_id
-            FROM comments c
-            JOIN users u ON c.user_id = u.id
-            WHERE c.report_id = ?
-            ORDER BY c.created_at DESC`,
+        u.id as user_id, u.profile_photo, u.name, 
+        c.report_id
+        FROM comments c
+        JOIN users u ON c.user_id = u.id
+        WHERE c.report_id = ?
+        ORDER BY c.created_at DESC`,
       [reportId],
     );
 

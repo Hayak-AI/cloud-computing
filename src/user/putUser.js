@@ -5,7 +5,7 @@ const Joi = require('joi');
 const schema = Joi.object({
   name: Joi.string().min(3).max(30).optional(),
   profile_photo: Joi.string().uri().optional(),
-  phone_number: Joi.string().min(10).max(15).optional(),
+  phone_number: Joi.string().min(10).max(15).allow('').optional(),
 });
 
 // Handler untuk memperbarui data pengguna
@@ -31,7 +31,7 @@ const updateUserHandler = async (request, h) => {
   const result = await pool.query(updateQuery, [
     name,
     profile_photo,
-    phone_number,
+    phone_number || null,
     userId,
   ]);
 
