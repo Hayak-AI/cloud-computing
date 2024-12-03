@@ -8,10 +8,10 @@ const getProfileHandler = async (request, h) => {
   if (rows.length === 0) {
     return h
       .response({
-        status: 'fail',
-        message: 'Pengguna tidak ditemukan',
+        status: 'success',
+        message: [],
       })
-      .code(404);
+      .code(200);
   }
 
   const user = rows[0];
