@@ -43,6 +43,7 @@ const updatePostHandler = async (request, h) => {
         .response({
           status: 'fail',
           message: 'Postingan tidak ditemukan',
+          details: error.details[0].message,
         })
         .code(400);
     }

@@ -22,11 +22,13 @@ const addCommentHandler = async (request, h) => {
 
   // Validasi payload
   const { error } = commentSchema.validate({ post_id, report_id, content });
+  console.log(error);
   if (error) {
     return h
       .response({
         status: 'fail',
         message: 'Data yang Anda masukkan salah',
+        details: error.details[0].message,
       })
       .code(400);
   }
