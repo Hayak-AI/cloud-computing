@@ -28,10 +28,10 @@ const getPostCommentsHandler = async (request, h) => {
     if (comments.length === 0) {
       return h
         .response({
-          status: 'fail',
-          message: 'Tidak ada komentar untuk postingan ini',
+          status: 'success',
+          message: [],
         })
-        .code(404);
+        .code(200);
     }
 
     let responseData = comments

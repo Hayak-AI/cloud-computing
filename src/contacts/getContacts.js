@@ -13,10 +13,10 @@ const getContactsHandler = async (request, h) => {
     if (rows.length === 0) {
       return h
         .response({
-          status: 'fail',
-          message: 'Tidak ada kontak darurat ditemukan',
+          status: 'success',
+          message: [],
         })
-        .code(404);
+        .code(200);
     }
 
     // Format data kontak
