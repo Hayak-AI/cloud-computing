@@ -8,7 +8,7 @@ const resetPasswordHandler = async (request, h) => {
 
   // Validasi token dan password menggunakan Joi
   const schema = Joi.object({
-    otp: Joi.string().required(),
+    otp: Joi.number().integer().required(),
     password: Joi.string().min(8).required(),
   });
 
@@ -21,15 +21,25 @@ const resetPasswordHandler = async (request, h) => {
       })
       .code(400);
   }
-
   try {
-    const [otpResult] = await pool.query(
-      'SELECT * FROM otp WHERE otp = ?', [otp]
-    );
-    // Verifikasi token
+    const [otpResult] = await pool.query('SELECT * FROM otp WHERE otp = ?', [
+      otp,
+    ]);
+    if (otpResult.length === 0) {
+      return h
+        .response({
+          status: 'fail',
+          message: 'OTP tidak valid',
+        })
+        .code(400);
+    }
+
+    await pool.query('DELETE FROM otp WHERE otp = ?', [otp]);
+
+    const { token } = otpResult[0];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const { userId } = decoded;
-    
+
     // Hash password baru
     const hashedPassword = await bcrypt.hash(password, 10);
 
