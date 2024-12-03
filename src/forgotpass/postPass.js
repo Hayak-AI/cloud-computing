@@ -3,6 +3,10 @@ const nodemailer = require('nodemailer');
 const pool = require('../database');
 const jwt = require('jsonwebtoken');
 
+const generateOTP = () => {
+  return Math.floor(10000 + Math.random() * 90000);
+};
+
 const forgotPasswordHandler = async (request, h) => {
   const { email } = request.payload;
 
@@ -45,6 +49,23 @@ const forgotPasswordHandler = async (request, h) => {
       expiresIn: '15m',
     });
 
+    // Menghasilkan OTP 5 digit yang unik
+    let otp;
+    let otpExists;
+    do {
+      otp = generateOTP();
+      const [existingOtp] = await pool.query(
+        'SELECT otp_id FROM otp WHERE otp = ?',
+        [otp],
+      );
+      otpExists = existingOtp.length > 0;
+    } while (otpExists);
+
+    await pool.query('INSERT INTO otp (otp, token) VALUES (?, ?)', [
+      otp,
+      token,
+    ]);
+
     // Konfigurasi transporter untuk nodemailer
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -60,13 +81,14 @@ const forgotPasswordHandler = async (request, h) => {
       from: process.env.SMTP_EMAIL_USER,
       to: email,
       subject: 'Reset Password',
-      text: `Here is your password reset token: ${token}`,
+      text: `Kode OTP Anda adalah ${otp}. Kode ini berlaku selama 15 menit.`,
     };
 
     await transporter.sendMail(mailOptions);
     return h
       .response({
         status: 'success',
+        message: 'OTP telah dikirim ke email Anda',
       })
       .code(200);
   } catch (err) {
