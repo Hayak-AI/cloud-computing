@@ -12,13 +12,14 @@ const addContactsHandler = async (request, h) => {
   const userId = request.auth.artifacts.decoded.payload.user.id;
 
   const { name, phone, email, message } = request.payload;
-
   const { error } = schema.validate({ name, phone, email, message });
+  console.log(error.details);
   if (error) {
     return h
       .response({
         status: 'fail',
         message: 'Kontak yang Anda masukkan salah',
+        details: error.details[0].message,
       })
       .code(400);
   }

@@ -22,10 +22,10 @@ const getPostHandler = async (request, h) => {
     if (postResult.length === 0) {
       return h
         .response({
-          status: 'fail',
-          message: 'Postingan tidak ditemukan',
+          status: 'success',
+          message: [],
         })
-        .code(404);
+        .code(200);
     }
 
     const post = postResult[0];

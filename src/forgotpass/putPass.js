@@ -4,16 +4,15 @@ const pool = require('../database');
 const bcrypt = require('bcrypt');
 
 const resetPasswordHandler = async (request, h) => {
-  const { token, password } = request.payload;
+  const { otp, password } = request.payload;
 
   // Validasi token dan password menggunakan Joi
   const schema = Joi.object({
-    token: Joi.string().required(),
+    otp: Joi.number().integer().required(),
     password: Joi.string().min(8).required(),
   });
 
-  const { error } = schema.validate({ token, password });
-
+  const { error } = schema.validate({ otp, password });
   if (error) {
     return h
       .response({
@@ -22,9 +21,22 @@ const resetPasswordHandler = async (request, h) => {
       })
       .code(400);
   }
-
   try {
-    // Verifikasi token
+    const [otpResult] = await pool.query('SELECT * FROM otp WHERE otp = ?', [
+      otp,
+    ]);
+    if (otpResult.length === 0) {
+      return h
+        .response({
+          status: 'fail',
+          message: 'OTP tidak valid',
+        })
+        .code(400);
+    }
+
+    await pool.query('DELETE FROM otp WHERE otp = ?', [otp]);
+
+    const { token } = otpResult[0];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const { userId } = decoded;
 

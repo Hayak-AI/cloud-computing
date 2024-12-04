@@ -20,6 +20,7 @@ const postEmergenciesHandler = async (request, h) => {
       .response({
         status: 'fail',
         message: 'Data Anda tidak valid',
+        details: error.details[0].message,
       })
       .code(400);
   }
