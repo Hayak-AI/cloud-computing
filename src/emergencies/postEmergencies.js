@@ -49,7 +49,8 @@ const postEmergenciesHandler = async (request, h) => {
 
     // Fetch contacts with notify: true
     const [contacts] = await pool.query(
-      'SELECT contact_name, contact_email, message FROM contacts WHERE notify = true',
+      'SELECT contact_name, contact_email, message FROM contacts WHERE notify = true AND user_id = ?',
+      [userId],
     );
 
     // Configure nodemailer
@@ -79,7 +80,10 @@ const postEmergenciesHandler = async (request, h) => {
           <p style="color: #555;">Pesan dari ${name}: ${contact.message}</p>
           <div style="text-align: center; margin: 20px 0;">
             <p style="color: #555; font-weight: bold;">Saya dalam bahaya di sini:</p>
-            <a href="https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}" style="display: inline-block; padding: 10px; font-size: 16px; color: #fff; text-decoration: none; border-radius: 50%;"><img src="https://storage.googleapis.com/hayak-ai-profile-picture/email/Maps%20Button%20(1).png" alt="Map Icon" style="height: 44px; width: 44px;"></a>
+            <a href="https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #fff; background-color: #007bff; text-decoration: none; border-radius: 5px;">
+              <img src="https://img.icons8.com/ios-filled/50/ffffff/marker.png" alt="Map Icon" style="height: 24px; width: 24px; vertical-align: middle; margin-right: 8px;">
+              <span style="vertical-align: middle;">Cek Disini</span>
+            </a>
           </div>
           <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;" />
           <p style="color: #333; text-align: center; font-size: 14px;">Terima kasih,<br>Tim Support Hayak.AI</p>

@@ -1,4 +1,4 @@
 /node_modules
 .env
-erd/hayakdb.sql
+erd/hayak_db.sql
 serviceaccountkey.json
