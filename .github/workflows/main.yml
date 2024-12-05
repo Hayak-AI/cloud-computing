@@ -1,0 +1,39 @@
+name: Deploy to Compute Engine
+
+on:
+  push:
+    branches:
+      - master  # Change this to your deployment branch if needed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Checkout the code
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # 2. Set up SSH
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    # 3. Deploy to Compute Engine
+    - name: Deploy to GCE
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.GCE_SSH_USER }}@${{ secrets.GCE_INSTANCE_IP }} << 'EOF'
+          set -e
+
+          cd cloud-computing
+          
+          # Pull the latest changes
+          git pull origin main
+          
+          npm install
+          
+          # Run any additional setup commands (e.g., restart services)
+          # Example: Restarting a Node.js application
+          pm2 restart server || pm2 start src/server.js
+        EOF
