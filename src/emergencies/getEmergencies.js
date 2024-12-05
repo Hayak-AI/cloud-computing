@@ -3,7 +3,6 @@ const pool = require('../database');
 const getEmergenciesHandler = async (request, h) => {
   const userId = request.auth.artifacts.decoded.payload.user.id;
 
-  //Ambil data emergency berdasarkan user_id yang ada dalam decodedToken
   try {
     const query = `
             SELECT 
