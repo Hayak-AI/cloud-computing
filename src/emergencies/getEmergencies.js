@@ -17,9 +17,9 @@ const getEmergenciesHandler = async (request, h) => {
             FROM 
                 emergencies e
             JOIN 
-                maps m ON e.location_id = m.id
+                maps m ON m.id = e.location_id
             LEFT JOIN 
-                reports r ON e.emergency_id = r.id
+                reports r ON r.location_id = e.location_id
             WHERE 
                 e.user_id = ? AND e.emergency_status = 'ongoing';
         `;
