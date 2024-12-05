@@ -84,7 +84,7 @@ const forgotPasswordHandler = async (request, h) => {
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 12px; background-color: #f9f9f9; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
             <div style="text-align: center; margin-bottom: 20px;">
-            <img src="https://storage.googleapis.com/hayak-ai-profile-picture/email/logo_bangkit-removebg-preview%5B1%5D.png" alt="Hayak.AI Logo" style="height: 50px; margin-bottom: 10px;" />
+            <img src="https://storage.googleapis.com/hayak-ai-profile-picture/email/4413965_93088%209.png" alt="Hayak.AI Logo" style="height: 150px; margin-bottom: 25px;" />
             <h1 style="color: #007bff; font-size: 24px; margin: 0;">Reset Password</h1>
           </div>
             <p style="color: #333;">Halo <strong>${name}</strong>,</p>
