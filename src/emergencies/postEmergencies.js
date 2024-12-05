@@ -1,5 +1,6 @@
 const pool = require('../database');
 const Joi = require('joi');
+const nodemailer = require('nodemailer');
 
 const schema = Joi.object({
   description: Joi.string().required(),
@@ -46,9 +47,60 @@ const postEmergenciesHandler = async (request, h) => {
       [userId, location_id, 'ongoing'],
     );
 
+    // Fetch contacts with notify: true
+    const [contacts] = await pool.query(
+      'SELECT contact_name, contact_email, message FROM contacts WHERE notify = true',
+    );
+
+    // Configure nodemailer
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      port: 587,
+      auth: {
+        user: process.env.SMTP_EMAIL_USER,
+        pass: process.env.SMTP_EMAIL_PASS,
+      },
+    });
+
+    // Send email to each contact
+    contacts.forEach((contact) => {
+      const mailOptions = {
+        from: process.env.SMTP_EMAIL_USER,
+        to: contact.contact_email,
+        subject: 'Emergency Notification',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 12px; background-color: #f9f9f9; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="https://storage.googleapis.com/hayak-ai-profile-picture/email/logo_bangkit-removebg-preview%5B1%5D.png" alt="Hayak.AI Logo" style="height: 50px; margin-bottom: 10px;" />
+            <br>
+            <h1 style="color: red; font-size: 24px; margin: 0; border: 2px solid red; display: inline-block; padding: 5px 10px;">Emergency Notification</h1>
+          </div>
+          <p style="color: #333;">Halo <strong>${contact.contact_name}</strong>,</p>
+          <p style="color: #555;">Pesan dari ${name}: ${contact.message}</p>
+          <div style="text-align: center; margin: 20px 0;">
+            <p style="color: #555; font-weight: bold;">Saya dalam bahaya di sini:</p>
+            <a href="https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}" style="display: inline-block; padding: 10px; font-size: 16px; color: #fff; text-decoration: none; border-radius: 50%;"><img src="https://storage.googleapis.com/hayak-ai-profile-picture/email/Maps%20Button%20(1).png" alt="Map Icon" style="height: 44px; width: 44px;"></a>
+          </div>
+          <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;" />
+          <p style="color: #333; text-align: center; font-size: 14px;">Terima kasih,<br>Tim Support Hayak.AI</p>
+          <div style="text-align: center; margin-top: 20px; color: #888; font-size: 12px;">
+            &copy; 2024 Hayak.AI
+          </div>
+        </div>
+      `,
+      };
+
+      transporter.sendMail(mailOptions, (error) => {
+        if (error) {
+          console.error('Email sending error:', error);
+        }
+      });
+    });
+
     return h
       .response({
         status: 'success',
+        message: 'Emergency berhasil dikirim',
       })
       .code(201);
   } catch (error) {
