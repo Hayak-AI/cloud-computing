@@ -20,7 +20,7 @@ const getEmergenciesHandler = async (request, h) => {
             LEFT JOIN 
                 reports r ON r.location_id = e.location_id
             WHERE 
-                e.user_id = ? AND e.emergency_status = 'ongoing';
+                e.emergency_status = 'ongoing';
         `;
 
     const [rows] = await pool.execute(query, [userId]);
