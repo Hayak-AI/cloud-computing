@@ -28,6 +28,7 @@ const {
   getReportCommentsHandler,
 } = require('./communityComments/getComment');
 const { deleteCommentHandler } = require('./communityComments/deleteComment');
+const { getSafetyScore } = require('./news/getSafetyScore');
 
 const routes = [
   {
@@ -251,6 +252,14 @@ const routes = [
     method: 'GET',
     path: '/posts',
     handler: getAllPostHandler,
+    options: {
+      auth: 'jwt',
+    },
+  },
+  {
+    method: 'GET',
+    path: '/news/{location}',
+    handler: getSafetyScore,
     options: {
       auth: 'jwt',
     },
