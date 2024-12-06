@@ -153,7 +153,7 @@ File JSON inilah yang akan Anda tempatkan di path yang sesuai, seperti yang dise
 Setelah Anda menyiapkan semuanya, Anda dapat menjalankan aplikasi dengan perintah berikut:
 
 ```bash
-npm start
+npm run start
 ```
 
 Aplikasi akan berjalan pada **`http://localhost:3000`** jika Anda menggunakan pengaturan default.
