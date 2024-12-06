@@ -22,7 +22,7 @@ CREATE TABLE `preferences` (
     `user_id` INT,
     `voice_detection` BOOLEAN DEFAULT false,
     `dark_mode` BOOLEAN DEFAULT false,
-    `location_tracking` BOOLEAN DEFAULT false,
+    `voice_sensitivity` ENUM('low', 'medium', 'high') DEFAULT 'medium',
     `created_at` TIMESTAMP default now(),
     `updated_at` TIMESTAMP default now()
 );
