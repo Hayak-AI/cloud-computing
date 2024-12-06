@@ -4,12 +4,12 @@ const Joi = require('joi');
 const schema = Joi.object({
   voice_detection: Joi.boolean().required(),
   dark_mode: Joi.boolean().required(),
-  location_tracking: Joi.boolean().required(),
+  voice_sensitivity: Joi.string().valid('low', 'medium', 'high').required(),
 });
 
 const putPreferences = async (req, res) => {
   const userId = req.auth.artifacts.decoded.payload.user.id;
-  const { voice_detection, dark_mode, location_tracking } = req.payload;
+  const { voice_detection, dark_mode, voice_sensitivity } = req.payload;
 
   const convertBoolToInt = (input) => {
     if (input) {
@@ -22,7 +22,7 @@ const putPreferences = async (req, res) => {
   const { error } = schema.validate({
     voice_detection,
     dark_mode,
-    location_tracking,
+    voice_sensitivity,
   });
   if (error) {
     return res
@@ -34,15 +34,17 @@ const putPreferences = async (req, res) => {
   }
 
   try {
-    const [result] = await pool.execute(
-      'UPDATE preferences SET voice_detection = ?, dark_mode = ?, location_tracking = ? WHERE user_id = ?',
-      [
-        convertBoolToInt(voice_detection),
-        convertBoolToInt(dark_mode),
-        convertBoolToInt(location_tracking),
-        userId,
-      ],
-    );
+    const query = `
+        UPDATE preferences
+        SET voice_detection = ?, dark_mode = ?, voice_sensitivity = ?
+        WHERE user_id = ?
+    `;
+    const [result] = await pool.query(query, [
+      convertBoolToInt(voice_detection),
+      convertBoolToInt(dark_mode),
+      voice_sensitivity,
+      userId,
+    ]);
 
     if (result.affectedRows === 0) {
       return h

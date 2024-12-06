@@ -47,10 +47,10 @@ const registerHandler = async (request, h) => {
     const userId = userRows.insertId;
 
     const preferencesQuery = `
-            INSERT INTO preferences (user_id, voice_detection, dark_mode, location_tracking)
+            INSERT INTO preferences (user_id, voice_detection, dark_mode, voice_sensitivity)
             VALUES (?, ?, ?, ?)
         `;
-    await pool.query(preferencesQuery, [userId, false, false, false]);
+        await pool.query(preferencesQuery, [userId, false, false, 'medium']);
 
     return h
       .response({

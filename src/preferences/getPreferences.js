@@ -14,7 +14,7 @@ const getPreferences = async (request, res) => {
         data: {
           voice_detection: Boolean(rows[0].voice_detection),
           dark_mode: Boolean(rows[0].dark_mode),
-          location_tracking: Boolean(rows[0].location_tracking),
+          voice_sensitivity: rows[0].voice_sensitivity,
         },
       })
       .code(200);
