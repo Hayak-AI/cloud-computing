@@ -70,29 +70,28 @@ const postEmergenciesHandler = async (request, h) => {
         to: contact.contact_email,
         subject: 'Emergency Notification',
         html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 12px; background-color: #f9f9f9; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-          <div style="text-align: center; margin-bottom: 20px;">
-            <img src="https://storage.googleapis.com/hayak-ai-profile-picture/email/4413965_93088%209.png" alt="Hayak.AI Logo" style="height: 150px; margin-bottom: 25px;" />
-            <br>
-            <h1 style="color: red; font-size: 24px; margin: 0; border: 2px solid red; display: inline-block; padding: 5px 10px;">Emergency Notification</h1>
-          </div>
-          <p style="color: #333;">Halo <strong>${contact.contact_name}</strong>,</p>
-          <p style="color: #555;">Pesan dari ${name}: ${contact.message}</p>
-          <div style="text-align: center; margin: 20px 0;">
-            <p style="color: #555; font-weight: bold;">Saya dalam bahaya di sini:</p>
-            <a href="https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #fff; background-color: #007bff; text-decoration: none; border-radius: 5px;">
-              <img src="https://img.icons8.com/ios-filled/50/ffffff/marker.png" alt="Map Icon" style="height: 24px; width: 24px; vertical-align: middle; margin-right: 8px;">
-              <span style="vertical-align: middle;">Cek Lokasi</span>
-            </a>
-          </div>
-          <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;" />
-          <p style="color: #333; text-align: center; font-size: 14px;">Terima kasih,<br>Tim Support Hayak.AI</p>
-          <div style="text-align: center; margin-top: 20px; color: #888; font-size: 12px;">
-            &copy; 2024 Hayak.AI
-          </div>
+      <div style="font-family: 'Roboto', sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #d8c2bc; border-radius: 12px; background-color: #fff8f6; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <div style="text-align: center; margin-bottom:40px;">
+          <img src="https://storage.googleapis.com/hayak-ai-profile-picture/email/logo-ya.png" alt="Hayak.AI Logo" style="height: 30px; margin-bottom: 35px;" />
+        <br>
+          <h1 style="font-family: 'Gill Sans', 'Gill Sans MT'; color: #c25056; font-size: 24px; margin: 0; border: 2px solid #c25056; display: inline-block; padding: 5px 10px; border-radius: 6px;">Emergency Notification</h1>
         </div>
-      `,
-      };
+          <p style="color: #410002;">Halo <strong>${contact.contact_name}</strong>,</p>
+          <p style="color: #410002">Pesan dari <strong>${name}</strong>: ${contact.message}</p>
+        <div style="text-align: center; margin: 20px 0;">
+          <p style="color: #410002 ;font-weight: bold;">Saya dalam bahaya di sini:</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #fff8f6; background-color: #c25056; text-decoration: none; border-radius: 5px;">
+          <span style="vertical-align: middle;">Cek Lokasi</span>
+          </a>
+        </div>
+        <hr style="border: none; border-top: 1px solid #d8c2bc; margin: 20px 0;" />
+        <p style="font-family: 'Gill Sans', 'Gill Sans MT'; color: #53433f; text-align: center; font-size: 14px;">Terima kasih,<br>Tim Support Hayak.AI</p>
+        <div style="font-family: 'Gill Sans', 'Gill Sans MT'; text-align: center; margin-top: 20px; color: #afa8a6; font-size: 12px;">
+        &copy; 2024 Hayak.AI
+        </div>
+      </div>
+    `,
+  };
 
       transporter.sendMail(mailOptions, (error) => {
         if (error) {
