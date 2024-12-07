@@ -2,8 +2,12 @@ const pool = require('../database');
 
 const getEmergenciesHandler = async (request, h) => {
   const userId = request.auth.artifacts.decoded.payload.user.id;
+  const { limit = 5, skip = 0 } = request.query;
 
   try {
+    const limitInt = parseInt(limit, 10);
+    const skipInt = parseInt(skip, 10);
+
     const query = `
             SELECT 
                 e.emergency_id, 
@@ -20,10 +24,10 @@ const getEmergenciesHandler = async (request, h) => {
             LEFT JOIN 
                 reports r ON r.location_id = e.location_id
             WHERE 
-                e.emergency_status = 'ongoing';
+                e.emergency_status = 'ongoing'
+            LIMIT ? OFFSET ?;
         `;
-
-    const [rows] = await pool.execute(query, [userId]);
+    const [rows] = await pool.query(query, [limitInt, skipInt]);
 
     if (rows.length === 0) {
       return h

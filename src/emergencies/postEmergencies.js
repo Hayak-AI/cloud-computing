@@ -91,7 +91,7 @@ const postEmergenciesHandler = async (request, h) => {
         </div>
       </div>
     `,
-  };
+    };
 
       transporter.sendMail(mailOptions, (error) => {
         if (error) {

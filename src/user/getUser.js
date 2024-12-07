@@ -9,7 +9,7 @@ const getProfileHandler = async (request, h) => {
     return h
       .response({
         status: 'success',
-        message: [],
+        data: [],
       })
       .code(200);
   }
