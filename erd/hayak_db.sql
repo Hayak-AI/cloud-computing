@@ -66,7 +66,7 @@ CREATE TABLE `notifications` (
 );
 
 CREATE TABLE `emergencies` (
-    `emergency_id` INT PRIMARY KEY,
+    `emergency_id` INT PRIMARY KEY AUTO_INCREMENT,
     `user_id` INT,
     `location_id` INT,
     `emergency_status` ENUM('ongoing', 'resolved') DEFAULT 'ongoing',
