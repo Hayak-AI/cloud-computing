@@ -2,9 +2,12 @@ const pool = require('../database');
 
 const getEmergenciesHandler = async (request, h) => {
   const userId = request.auth.artifacts.decoded.payload.user.id;
+  const { limit = 5, skip = 0 } = request.query;
 
-  //Ambil data emergency berdasarkan user_id yang ada dalam decodedToken
   try {
+    const limitInt = parseInt(limit, 10);
+    const skipInt = parseInt(skip, 10);
+
     const query = `
             SELECT 
                 e.emergency_id, 
@@ -17,14 +20,14 @@ const getEmergenciesHandler = async (request, h) => {
             FROM 
                 emergencies e
             JOIN 
-                maps m ON e.location_id = m.id
+                maps m ON m.id = e.location_id
             LEFT JOIN 
-                reports r ON e.emergency_id = r.id
+                reports r ON r.location_id = e.location_id
             WHERE 
-                e.user_id = ? AND e.emergency_status = 'ongoing';
+                e.emergency_status = 'ongoing'
+            LIMIT ? OFFSET ?;
         `;
-
-    const [rows] = await pool.execute(query, [userId]);
+    const [rows] = await pool.query(query, [limitInt, skipInt]);
 
     if (rows.length === 0) {
       return h

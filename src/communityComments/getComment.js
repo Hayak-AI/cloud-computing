@@ -12,6 +12,7 @@ const getPostCommentsHandler = async (request, h) => {
   }
 
   const postId = request.params.id;
+  const { limit = 5, skip = 0 } = request.query;
 
   try {
     const [comments] = await pool.query(
@@ -21,15 +22,16 @@ const getPostCommentsHandler = async (request, h) => {
             FROM comments c
             JOIN users u ON c.user_id = u.id
             WHERE c.post_id = ?
-            ORDER BY c.created_at DESC`,
-      [postId],
+            ORDER BY c.created_at DESC
+          LIMIT ? OFFSET ?`,
+      [postId, parseInt(limit), parseInt(skip)],
     );
 
     if (comments.length === 0) {
       return h
         .response({
           status: 'success',
-          message: [],
+          data: [],
         })
         .code(200);
     }
@@ -79,6 +81,7 @@ const getReportCommentsHandler = async (request, h) => {
   }
 
   const reportId = request.params.id;
+  const { limit = 5, skip = 0 } = request.query;
 
   try {
     const [comments] = await pool.query(
@@ -88,8 +91,9 @@ const getReportCommentsHandler = async (request, h) => {
         FROM comments c
         JOIN users u ON c.user_id = u.id
         WHERE c.report_id = ?
-        ORDER BY c.created_at DESC`,
-      [reportId],
+        ORDER BY c.created_at DESC
+        LIMIT ? OFFSET ?`,
+      [reportId, parseInt(limit), parseInt(skip)],
     );
 
     if (comments.length === 0) {

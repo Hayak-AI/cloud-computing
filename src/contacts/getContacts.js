@@ -4,17 +4,21 @@ const Joi = require('joi');
 const getContactsHandler = async (request, h) => {
   const userId = request.auth.artifacts.decoded.payload.user.id;
   const { notify } = request.query;
+  const { limit = 5, skip = 0 } = request.query;
 
   try {
+    const limitInt = parseInt(limit, 10);
+    const skipInt = parseInt(skip, 10);
+
     // Query untuk mendapatkan kontak darurat
-    const query = 'SELECT * FROM contacts WHERE user_id = ?';
-    const [rows] = await pool.execute(query, [userId]);
+    const query = 'SELECT * FROM contacts WHERE user_id = ? LIMIT ? OFFSET ?';
+    const [rows] = await pool.query(query, [userId, limitInt, skipInt]);
 
     if (rows.length === 0) {
       return h
         .response({
           status: 'success',
-          message: [],
+          data: [],
         })
         .code(200);
     }
