@@ -13,7 +13,7 @@ const addContactsHandler = async (request, h) => {
 
   const { name, phone, email, message } = request.payload;
   const { error } = schema.validate({ name, phone, email, message });
-  console.log(error.details);
+
   if (error) {
     return h
       .response({

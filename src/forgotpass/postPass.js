@@ -82,25 +82,27 @@ const forgotPasswordHandler = async (request, h) => {
       to: email,
       subject: 'Reset Password',
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 12px; background-color: #f9f9f9; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-            <div style="text-align: center; margin-bottom: 20px;">
-            <img src="https://storage.googleapis.com/hayak-ai-profile-picture/email/logo_bangkit-removebg-preview%5B1%5D.png" alt="Hayak.AI Logo" style="height: 50px; margin-bottom: 10px;" />
-            <h1 style="color: #007bff; font-size: 24px; margin: 0;">Reset Password</h1>
-          </div>
-            <p style="color: #333;">Halo <strong>${name}</strong>,</p>
-            <p style="color: #555;">Anda telah meminta untuk mereset password Anda. Gunakan kode OTP berikut untuk mereset password Anda:</p>
-            <div style="text-align: center; margin: 20px 0;">
-              <span style="font-size: 28px; font-weight: bold; color: #007bff; padding: 10px 20px; border: 2px dashed #007bff; border-radius: 8px; background-color: #eef6ff;">${otp}</span>
-          </div>
-            <p style="color: #555;">Kode ini berlaku selama <strong>15 menit</strong>.</p>
-            <p style="color: #555;">Jika Anda tidak meminta reset password, abaikan email ini.</p>
-            <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;" />
-            <p style="color: #333; text-align: center; font-size: 14px;">Terima kasih,<br>Tim Support Hayak.AI</p>
-            <div style="text-align: center; margin-top: 20px; color: #888; font-size: 12px;">
-            &copy; 2024 Hayak.AI
-          </div>
+      <div
+        style="font-family: 'Roboto', sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #d8c2bc; border-radius: 12px; background-color: #fff8f6; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <div style="text-align:center;margin-bottom:20px">
+          <img src="https://storage.googleapis.com/hayak-ai-profile-picture/email/logo-brown.png"
+          alt="Hayak.AI Logo" style="height:30px;margin-bottom:35px" />
+          <h1 style="font-family: 'Gill Sans', 'Gill Sans MT'; color:#8f4c38;font-size:30px;margin:0;">Reset Password</h1>
         </div>
-       `,
+          <p style="color: 231917;">Halo <strong>${name}</strong>,</p>
+          <p style="color: 231917;">Anda telah meminta untuk mereset password Anda. Gunakan kode OTP berikut untuk mereset password Anda:</p>
+          <div style="text-align: center; margin: 32px 0;">
+            <span style="font-size:28px;font-weight:bold;color:#3a0b01;padding:10px 20px;border:2px dashed #3a0b01;border-radius:8px;background-color:#ffdbd1">${otp}</span>
+          </div>
+        <p style="color: #231917;">Kode ini berlaku selama <strong>15 menit</strong>.</p>
+        <p style="color: #231917;">Jika Anda tidak meminta reset password, abaikan email ini.</p>
+        <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;" />
+        <p style="font-family: 'Gill Sans', 'Gill Sans MT'; color: #53433f; text-align: center; font-size: 14px;">Terima kasih,<br>Tim Support Hayak.AI</p>
+        <div style="font-family: 'Gill Sans', 'Gill Sans MT'; text-align: center; margin-top: 20px; color: #888; font-size: 12px;">
+        &copy; 2024 Hayak.AI
+        </div>
+      </div>
+    `,
     };
 
     await transporter.sendMail(mailOptions);
