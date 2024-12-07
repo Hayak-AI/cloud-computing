@@ -1,4 +1,5 @@
 -- Active: 1733040425392@@127.0.0.1@3306@hayak_db
+
 CREATE TABLE `users` (
     `id` INT PRIMARY KEY AUTO_INCREMENT,
     `name` VARCHAR(100),
