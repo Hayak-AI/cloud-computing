@@ -2,6 +2,7 @@ const pool = require('../database');
 
 const getMapsHandler = async (request, h) => {
   const userId = request.auth.artifacts.decoded.payload.user.id;
+  const { limit = 5, skip = 0 } = request.query;
 
   try {
     const [reports] = await pool.query(
@@ -9,7 +10,9 @@ const getMapsHandler = async (request, h) => {
                         l.location_name AS name, l.latitude, l.longitude, u.id AS user_id, u.name as user_name, u.profile_photo
                  FROM reports r
                  JOIN maps l ON r.location_id = l.id
-                 JOIN users u ON r.user_id = u.id`,
+                 JOIN users u ON r.user_id = u.id
+                 LIMIT ? OFFSET ?`,
+      [parseInt(limit), parseInt(skip)],
     );
 
     const formattedReports = reports.map((report) => ({
