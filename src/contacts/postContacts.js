@@ -19,7 +19,7 @@ const addContactsHandler = async (request, h) => {
       .response({
         status: 'fail',
         message: 'Kontak yang Anda masukkan salah',
-        details: error.details[0].message,
+        details: error?.details[0]?.message,
       })
       .code(400);
   }
