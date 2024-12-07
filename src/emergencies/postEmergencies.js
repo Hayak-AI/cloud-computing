@@ -1,5 +1,6 @@
 const pool = require('../database');
 const Joi = require('joi');
+const nodemailer = require('nodemailer');
 
 const schema = Joi.object({
   description: Joi.string().required(),
@@ -46,9 +47,63 @@ const postEmergenciesHandler = async (request, h) => {
       [userId, location_id, 'ongoing'],
     );
 
+    // Fetch contacts with notify: true
+    const [contacts] = await pool.query(
+      'SELECT contact_name, contact_email, message FROM contacts WHERE notify = true AND user_id = ?',
+      [userId],
+    );
+
+    // Configure nodemailer
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      port: 587,
+      auth: {
+        user: process.env.SMTP_EMAIL_USER,
+        pass: process.env.SMTP_EMAIL_PASS,
+      },
+    });
+
+    // Send email to each contact
+    contacts.forEach((contact) => {
+      const mailOptions = {
+        from: process.env.SMTP_EMAIL_USER,
+        to: contact.contact_email,
+        subject: 'Emergency Notification',
+        html: `
+      <div style="font-family: 'Roboto', sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #d8c2bc; border-radius: 12px; background-color: #fff8f6; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <div style="text-align: center; margin-bottom:40px;">
+          <img src="https://storage.googleapis.com/hayak-ai-profile-picture/email/logo-ya.png" alt="Hayak.AI Logo" style="height: 30px; margin-bottom: 35px;" />
+        <br>
+          <h1 style="font-family: 'Gill Sans', 'Gill Sans MT'; color: #c25056; font-size: 24px; margin: 0; border: 2px solid #c25056; display: inline-block; padding: 5px 10px; border-radius: 6px;">Emergency Notification</h1>
+        </div>
+          <p style="color: #410002;">Halo <strong>${contact.contact_name}</strong>,</p>
+          <p style="color: #410002">Pesan dari <strong>${name}</strong>: ${contact.message}</p>
+        <div style="text-align: center; margin: 20px 0;">
+          <p style="color: #410002 ;font-weight: bold;">Saya dalam bahaya di sini:</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #fff8f6; background-color: #c25056; text-decoration: none; border-radius: 5px;">
+          <span style="vertical-align: middle;">Cek Lokasi</span>
+          </a>
+        </div>
+        <hr style="border: none; border-top: 1px solid #d8c2bc; margin: 20px 0;" />
+        <p style="font-family: 'Gill Sans', 'Gill Sans MT'; color: #53433f; text-align: center; font-size: 14px;">Terima kasih,<br>Tim Support Hayak.AI</p>
+        <div style="font-family: 'Gill Sans', 'Gill Sans MT'; text-align: center; margin-top: 20px; color: #afa8a6; font-size: 12px;">
+        &copy; 2024 Hayak.AI
+        </div>
+      </div>
+    `,
+      };
+
+      transporter.sendMail(mailOptions, (error) => {
+        if (error) {
+          console.error('Email sending error:', error);
+        }
+      });
+    });
+
     return h
       .response({
         status: 'success',
+        message: 'Emergency berhasil dikirim',
       })
       .code(201);
   } catch (error) {
