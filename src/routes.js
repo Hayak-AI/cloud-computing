@@ -267,7 +267,7 @@ const routes = [
   },
   {
     method: 'PUT',
-    path: '/update-emailPassword',
+    path: '/update-email-password',
     handler: updateEmailPasswordHandler,
     options: {
       auth: 'jwt',
