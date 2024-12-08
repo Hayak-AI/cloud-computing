@@ -23,7 +23,7 @@ const { updatePostHandler } = require('./comunityPost/postUpdate');
 const { deleteComPostHandler } = require('./comunityPost/postDelete');
 const { getAllPostHandler } = require('./comunityPost/allpostGet');
 const { addCommentHandler } = require('./communityComments/postComment');
-const { updatePasswordHandler } = require('./forgotpass/UpdatePass');
+const { updateEmailPasswordHandler } = require('./forgotpass/UpdateEmailPass');
 const {
   getPostCommentsHandler,
   getReportCommentsHandler,
@@ -267,8 +267,8 @@ const routes = [
   },
   {
     method: 'PUT',
-    path: '/update-password',
-    handler: updatePasswordHandler,
+    path: '/update-emailPassword',
+    handler: updateEmailPasswordHandler,
     options: {
       auth: 'jwt',
     },
