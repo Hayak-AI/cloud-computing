@@ -4,7 +4,7 @@ const Joi = require('joi');
 // Schema validasi menggunakan Joi
 const schema = Joi.object({
   name: Joi.string().min(3).max(30).optional(),
-  profile_photo: Joi.string().uri().optional(),
+  profile_photo: Joi.string().uri().allow('').optional(),
   phone_number: Joi.string().min(10).max(15).allow('').optional(),
 });
 
