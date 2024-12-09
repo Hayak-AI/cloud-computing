@@ -43,7 +43,7 @@ const updatePostHandler = async (request, h) => {
         .response({
           status: 'fail',
           message: 'Postingan tidak ditemukan',
-          details: error.details[0].message,
+          details: error?.details[0]?.message,
         })
         .code(400);
     }
@@ -65,7 +65,7 @@ const updatePostHandler = async (request, h) => {
         title || postExists[0].title,
         content || postExists[0].content,
         category || postExists[0].category,
-        location_id,
+        location ? location_id : null,
         post_id,
         userId,
       ],

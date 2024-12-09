@@ -3,6 +3,7 @@ const pool = require('../database');
 const getAllPostHandler = async (request, h) => {
   const userId = request.auth.artifacts.decoded.payload.user.id;
   const from = request.query.from;
+  const { limit = 5, skip = 0 } = request.query; 
 
   try {
     let postResult;
@@ -16,7 +17,10 @@ const getAllPostHandler = async (request, h) => {
          JOIN users u ON p.user_id = u.id 
          LEFT JOIN maps m ON p.location_id = m.id 
          LEFT JOIN comments c ON p.post_id = c.post_id 
-         GROUP BY p.post_id`,
+         GROUP BY p.post_id
+         ORDER BY p.created_at DESC
+          LIMIT ? OFFSET ?`,
+        [parseInt(limit), parseInt(skip)],
       );
     } else {
       if (from === 'me') {
@@ -30,8 +34,9 @@ const getAllPostHandler = async (request, h) => {
            LEFT JOIN maps m ON p.location_id = m.id 
            LEFT JOIN comments c ON p.post_id = c.post_id 
            WHERE p.user_id = ? 
-           GROUP BY p.post_id`,
-          [userId],
+           GROUP BY p.post_id
+           LIMIT ? OFFSET ?`,
+          [userId, parseInt(limit), parseInt(skip)],
         );
       } else {
         [postResult] = await pool.query(
@@ -44,8 +49,9 @@ const getAllPostHandler = async (request, h) => {
         LEFT JOIN maps m ON p.location_id = m.id 
         LEFT JOIN comments c ON p.post_id = c.post_id 
         WHERE p.user_id = ? 
-        GROUP BY p.post_id`,
-          [from],
+        GROUP BY p.post_id
+         LIMIT ? OFFSET ?`,
+          [from, parseInt(limit), parseInt(skip)],
         );
       }
     }
