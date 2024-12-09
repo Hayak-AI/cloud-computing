@@ -18,6 +18,7 @@ const getAllPostHandler = async (request, h) => {
          LEFT JOIN maps m ON p.location_id = m.id 
          LEFT JOIN comments c ON p.post_id = c.post_id 
          GROUP BY p.post_id
+         ORDER BY p.created_at DESC
           LIMIT ? OFFSET ?`,
         [parseInt(limit), parseInt(skip)],
       );
