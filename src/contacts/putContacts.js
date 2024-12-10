@@ -5,7 +5,7 @@ const schema = Joi.object({
   contact_id: Joi.number().required(),
   name: Joi.string().min(3).max(30).required(),
   phone: Joi.string().min(10).max(15).required(),
-  email: Joi.string().email().required(),
+  email: Joi.string().email().allow(null, '').optional(),
   message: Joi.string().max(255).required(),
   notify: Joi.boolean().optional(),
 });
@@ -41,7 +41,7 @@ const updateContactsHandler = async (request, h) => {
 
     const [result] = await pool.query(
       'UPDATE contacts SET contact_name = ?, contact_phone = ?, contact_email = ?, message = ?, notify = ? WHERE id = ? AND user_id = ?',
-      [name, phone, email, message, notifyValue, contact_id, userId],
+      [name, phone, email || null, message, notifyValue, contact_id, userId],
     );
 
     if (result.affectedRows === 0) {

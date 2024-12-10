@@ -4,7 +4,7 @@ const Joi = require('joi');
 const schema = Joi.object({
   name: Joi.string().min(3).max(30).required(),
   phone: Joi.string().min(10).max(15).required(),
-  email: Joi.string().email().required(),
+  email: Joi.string().email().allow(null, '').optional(),
   message: Joi.string().max(255).required(),
 });
 
@@ -27,7 +27,7 @@ const addContactsHandler = async (request, h) => {
   try {
     await pool.query(
       'INSERT INTO contacts (user_id, contact_name, contact_phone, contact_email, message) VALUES (?, ?, ?, ?, ?)',
-      [userId, name, phone, email, message],
+      [userId, name, phone, email || null, message],
     );
 
     return h
