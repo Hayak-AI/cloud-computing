@@ -14,8 +14,6 @@ const schema = Joi.object({
 const postMapsReportHandler = async (request, h) => {
   const userId = request.auth.artifacts.decoded.payload.user.id;
 
-  console.log('Payload:', request.payload);
-
   // Validasi body request
   const { error } = schema.validate(request.payload);
   if (error) {

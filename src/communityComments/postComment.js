@@ -22,7 +22,6 @@ const addCommentHandler = async (request, h) => {
 
   // Validasi payload
   const { error } = commentSchema.validate({ post_id, report_id, content });
-  console.log(error);
   if (error) {
     return h
       .response({
