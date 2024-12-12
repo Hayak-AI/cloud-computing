@@ -53,6 +53,12 @@ const postEmergenciesHandler = async (request, h) => {
       [userId],
     );
 
+    const [userResult] = await pool.query(
+      'SELECT name FROM users WHERE id = ?',
+      [userId],
+    );
+    const users = userResult[0];
+
     // Configure nodemailer
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -77,7 +83,7 @@ const postEmergenciesHandler = async (request, h) => {
           <h1 style="font-family: 'Gill Sans', 'Gill Sans MT'; color: #c25056; font-size: 24px; margin: 0; border: 2px solid #c25056; display: inline-block; padding: 5px 10px; border-radius: 6px;">Emergency Notification</h1>
         </div>
           <p style="color: #410002;">Halo <strong>${contact.contact_name}</strong>,</p>
-          <p style="color: #410002">Pesan dari <strong>${name}</strong>: ${contact.message}</p>
+          <p style="color: #410002">Pesan dari <strong>${users.name}</strong>: ${contact.message}</p>
         <div style="text-align: center; margin: 20px 0;">
           <p style="color: #410002 ;font-weight: bold;">Saya dalam bahaya di sini:</p>
           <a href="https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #fff8f6; background-color: #c25056; text-decoration: none; border-radius: 5px;">
