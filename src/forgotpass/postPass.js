@@ -78,8 +78,8 @@ const forgotPasswordHandler = async (request, h) => {
 
     // Kirim email dengan token reset password
     const mailOptions = {
-      from: process.env.SMTP_EMAIL_USER,
-      to: email,
+      from: `Hayak.AI <${process.env.SMTP_EMAIL_USER}>`,
+      to: `${name} <${email}>`,
       subject: 'Reset Password',
       html: `
       <div

@@ -3,13 +3,13 @@ const Joi = require('joi');
 const nodemailer = require('nodemailer');
 
 const schema = Joi.object({
-  description: Joi.string().required(),
+  //description: Joi.string().required(),
   location: Joi.object({
     name: Joi.string().required(),
     latitude: Joi.number().required(),
     longitude: Joi.number().required(),
   }).required(),
-  evidence_url: Joi.string().uri().allow(null).optional(),
+  //evidence_url: Joi.string().uri().allow(null).optional(),
 });
 
 const postEmergenciesHandler = async (request, h) => {
@@ -26,7 +26,7 @@ const postEmergenciesHandler = async (request, h) => {
       .code(400);
   }
 
-  const { description, location, evidence_url } = request.payload;
+  const { location } = request.payload;
   const { name, latitude, longitude } = location;
 
   try {
@@ -37,10 +37,10 @@ const postEmergenciesHandler = async (request, h) => {
 
     const location_id = mapResult.insertId || mapResult.id;
 
-    await pool.query(
+    /*await pool.query(
       'INSERT INTO reports (user_id, location_id, report_description, evidence_url) VALUES (?, ?, ?, ?)', // Perbaikan kolom di query
       [userId, location_id, description, evidence_url],
-    );
+    );*/
 
     const emergencyResult = await pool.query(
       'INSERT INTO emergencies (user_id, location_id, emergency_status) VALUES (?, ?, ?)',
@@ -49,7 +49,7 @@ const postEmergenciesHandler = async (request, h) => {
 
     // Fetch contacts with notify: true
     const [contacts] = await pool.query(
-      'SELECT contact_name, contact_email, message FROM contacts WHERE notify = true AND user_id = ?',
+      'SELECT contact_name, contact_email, message FROM contacts WHERE notify = true AND user_id = ? AND contact_email IS NOT NULL',
       [userId],
     );
 
@@ -66,8 +66,8 @@ const postEmergenciesHandler = async (request, h) => {
     // Send email to each contact
     contacts.forEach((contact) => {
       const mailOptions = {
-        from: process.env.SMTP_EMAIL_USER,
-        to: contact.contact_email,
+        from: `Hayak.AI <${process.env.SMTP_EMAIL_USER}>`,
+        to: `${contact.contact_name} <${contact.contact_email}>`,
         subject: 'Emergency Notification',
         html: `
       <div style="font-family: 'Roboto', sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #d8c2bc; border-radius: 12px; background-color: #fff8f6; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
