@@ -1,51 +1,53 @@
-# Panduan Pengguna
+# User Guide
 
-Panduan ini akan membantu Anda untuk menyiapkan lingkungan pengembangan dan konfigurasi yang diperlukan untuk menjalankan aplikasi Hayak-AI
+This guide will help you set up the development environment and configuration required to run the Hayak-AI application.
 
-## 1. Persiapan Environment
+---
+
+## 1. Environment Preparation
 
 ### 1.1. Clone Repository
-Pertama, clone repository ini ke mesin lokal Anda menggunakan perintah berikut:
+First, clone this repository to your local machine using the following command:
 
 ```bash
-git clone  https://github.com/Hayak-AI/cloud-computing.git
+git clone https://github.com/Hayak-AI/cloud-computing.git
 cd cloud-computing
 ```
 
 ### 1.2. Install Dependencies
-Pastikan memiliki **Node.js** dan **npm** yang terpasang. Jika belum, dapat mengunduhnya dari [situs resmi Node.js](https://nodejs.org/).
+Make sure you have **Node.js** and **npm** installed. If not, you can download them from the [official Node.js website](https://nodejs.org/).
 
-Setelah itu, instal semua dependencies dengan menjalankan perintah berikut:
+Then, install all dependencies by running the following command:
 
 ```bash
 npm install
 ```
 
-### 1.3. Menyiapkan File `.env`
+### 1.3. Set Up the `.env` File
 
-Di dalam proyek, Anda akan melihat sebuah file contoh `.env.example`. Salin file ini menjadi `.env` dan sesuaikan dengan pengaturan lokal Anda. File `.env` berisi konfigurasi sensitif yang digunakan oleh aplikasi, seperti koneksi ke database, kunci API, dan pengaturan JWT.
+In the project, you will find an example file `.env.example`. Copy this file to `.env` and adjust it to match your local settings. The `.env` file contains sensitive configurations used by the application, such as database connections, API keys, and JWT settings.
 
 ```bash
 cp .env.example .env
 ```
 
-Buka file `.env` dan sesuaikan dengan detail yang diperlukan, seperti dijelaskan di bawah ini.
+Open the `.env` file and modify it with the necessary details as described below.
 
-### 1.4. Konfigurasi Environment Variables
+### 1.4. Environment Variables Configuration
 
-Berikut adalah penjelasan untuk setiap konfigurasi dalam file `.env` :
+Here is the explanation for each configuration in the `.env` file:
 
 #### 1. **JWT_SECRET**
-Secret key untuk **JSON Web Token** (JWT). Ini digunakan untuk menandatangani dan memverifikasi token yang digunakan dalam otentikasi.
+The secret key for **JSON Web Token** (JWT). This is used to sign and verify tokens used in authentication.
 
 ```bash
 JWT_SECRET=your_jwt_secret_key
 ```
 
-**Catatan**: Gantilah `your_jwt_secret_key` dengan kunci rahasia yang kuat.
+**Note**: Replace `your_jwt_secret_key` with a strong secret key.
 
 #### 2. **Database Configuration**
-Konfigurasi untuk menghubungkan aplikasi ke **MySQL** atau **MariaDB**.
+Configuration to connect the application to **MySQL** or **MariaDB**.
 
 ```bash
 DB_HOST=localhost
@@ -54,33 +56,33 @@ DB_PASSWORD=your_db_password
 DB_NAME=db_hayak
 ```
 
-- `DB_HOST`: Alamat host database (biasanya `localhost` jika Anda menjalankan database di mesin yang sama).
-- `DB_USER`: Username untuk mengakses database (misalnya `root`).
-- `DB_PASSWORD`: Password untuk database Anda.
-- `DB_NAME`: Nama database yang akan digunakan oleh aplikasi.
+- `DB_HOST`: The database host address (usually `localhost` if the database is running on the same machine).
+- `DB_USER`: Username to access the database (e.g., `root`).
+- `DB_PASSWORD`: Password for your database.
+- `DB_NAME`: The name of the database used by the application.
 
 #### 3. **Server Configuration**
-Konfigurasi untuk port dan host aplikasi.
+Configuration for the application's port and host.
 
 ```bash
 PORT=3000
 HOST=localhost
 ```
 
-- `PORT`: Port di mana aplikasi akan berjalan. Defaultnya adalah `3000`.
-- `HOST`: Host tempat aplikasi berjalan (biasanya `localhost`).
+- `PORT`: The port on which the application will run. Default is `3000`.
+- `HOST`: The host where the application will run (usually `localhost`).
 
 #### 4. **JWT_EXPIRES_IN**
-Durasi kadaluarsa token JWT. Anda bisa mengatur ini sesuai kebutuhan.
+The expiration duration of the JWT token. You can set this according to your requirements.
 
 ```bash
 JWT_EXPIRES_IN=30d
 ```
 
-Token JWT ini akan kadaluarsa dalam 30 hari.
+This token will expire in 30 days.
 
 #### 5. **Google Cloud Configuration**
-Untuk menghubungkan aplikasi dengan Google Cloud (misalnya untuk penyimpanan file di **Cloud Storage**), Anda memerlukan **Google Cloud Project ID** dan **Service Account Key**.
+To connect the application with Google Cloud (e.g., for file storage in **Cloud Storage**), you need a **Google Cloud Project ID** and a **Service Account Key**.
 
 ```bash
 GCLOUD_PROJECT_ID=your_project_id
@@ -88,25 +90,25 @@ GCLOUD_KEY_FILENAME=path/to/your/serviceaccountkey.json
 GCLOUD_BUCKET_NAME=your_bucket_name
 ```
 
-- `GCLOUD_PROJECT_ID`: ID proyek Anda di Google Cloud.
-- `GCLOUD_KEY_FILENAME`: Lokasi file JSON **Service Account Key** yang Anda unduh dari Google Cloud Console. Pastikan file ini memiliki izin yang sesuai untuk mengakses layanan Google Cloud yang Anda butuhkan.
-- `GCLOUD_BUCKET_NAME`: Nama bucket Google Cloud Storage yang akan digunakan oleh aplikasi.
+- `GCLOUD_PROJECT_ID`: Your Google Cloud Project ID.
+- `GCLOUD_KEY_FILENAME`: The location of the JSON **Service Account Key** file you downloaded from the Google Cloud Console. Ensure this file has the necessary permissions to access the required Google Cloud services.
+- `GCLOUD_BUCKET_NAME`: The name of the Google Cloud Storage bucket used by the application.
 
 #### 6. **SMTP Email Configuration**
-Untuk mengirim email menggunakan **SMTP** (misalnya untuk mengirimkan email verifikasi atau reset password), Anda perlu menyiapkan akun email SMTP.
+To send emails using **SMTP** (e.g., for verification or password reset emails), set up an SMTP email account.
 
 ```bash
 SMTP_EMAIL_USER=email_example@gmail.com
 SMTP_EMAIL_PASS=your_email_password
 ```
 
-- `SMTP_EMAIL_USER`: Alamat email yang digunakan untuk mengirimkan email.
-- `SMTP_EMAIL_PASS`: Password untuk akun email yang digunakan (pastikan Anda menggunakan password yang aman).
+- `SMTP_EMAIL_USER`: The email address used to send emails.
+- `SMTP_EMAIL_PASS`: The password for the email account (ensure it is secure).
 
 ---
 
 #### 7. **Custom Search API Configuration**
-Jika aplikasi Anda membutuhkan akses ke Google Custom Search API, Anda perlu mengonfigurasi kunci API dan ID mesin pencarian.
+If your application requires access to the Google Custom Search API, configure the API key and search engine ID.
 
 ```bash
 CUSTOM_SEARCH_API_KEY=your_custom_search_api_key
@@ -114,69 +116,73 @@ CUSTOM_SEARCH_ENGINE_ID=your_custom_search_engine_id
 CUSTOM_SEARCH_QUERY="search_query"
 ```
 
-## 2. Mendapatkan ID Proyek Google Cloud
+---
 
-Untuk menggunakan layanan Google Cloud, Anda perlu memiliki **Google Cloud Project**. Ikuti langkah-langkah berikut untuk mendapatkan ID Proyek Anda:
+## 2. Getting a Google Cloud Project ID
 
-### 2.1. Membuat Proyek di Google Cloud
+To use Google Cloud services, you need a **Google Cloud Project**. Follow these steps to obtain your Project ID:
 
-1. Kunjungi [Google Cloud Console](https://console.cloud.google.com/).
-2. Klik **"Select a Project"** di bagian atas layar.
-3. Klik **"New Project"**.
-4. Beri nama proyek Anda, dan pilih lokasi atau organisasi jika diperlukan.
-5. Klik **"Create"**.
+### 2.1. Create a Project in Google Cloud
 
-### 2.2. Mengaktifkan API yang Diperlukan
+1. Go to [Google Cloud Console](https://console.cloud.google.com/).
+2. Click **"Select a Project"** at the top of the screen.
+3. Click **"New Project"**.
+4. Name your project and select a location or organization if required.
+5. Click **"Create"**.
 
-Jika aplikasi Anda membutuhkan API tertentu, pastikan untuk mengaktifkan API yang relevan:
+### 2.2. Enable Required APIs
 
-1. Masuk ke [API Library](https://console.cloud.google.com/apis/library).
-2. Cari API yang Anda perlukan (misalnya **Google Cloud Storage API**) dan aktifkan.
+If your application requires specific APIs, ensure you enable the relevant APIs:
 
-### 2.3. Membuat Service Account dan Mendapatkan Key
+1. Go to the [API Library](https://console.cloud.google.com/apis/library).
+2. Search for the API you need (e.g., **Google Cloud Storage API**) and enable it.
 
-Untuk mengakses layanan Google Cloud dengan aplikasi Anda, Anda perlu membuat **Service Account** dan mengunduh **JSON key**:
+### 2.3. Create a Service Account and Obtain a Key
 
-1. Buka [Google Cloud Console - Service Accounts](https://console.cloud.google.com/iam-admin/serviceaccounts).
-2. Pilih proyek yang sesuai.
-3. Klik **Create Service Account**.
-4. Beri nama untuk service account dan tentukan peran yang sesuai (misalnya **Storage Admin** untuk akses penuh ke Cloud Storage).
-5. Setelah service account dibuat, klik pada **Actions** dan pilih **Create Key**.
-6. Pilih **JSON** untuk format kunci, lalu klik **Create** untuk mengunduh file kunci.
+To access Google Cloud services with your application, create a **Service Account** and download a **JSON key**:
 
-File JSON inilah yang akan Anda tempatkan di path yang sesuai, seperti yang disebutkan dalam file `.env`.
+1. Open [Google Cloud Console - Service Accounts](https://console.cloud.google.com/iam-admin/serviceaccounts).
+2. Select the appropriate project.
+3. Click **Create Service Account**.
+4. Name the service account and assign an appropriate role (e.g., **Storage Admin** for full access to Cloud Storage).
+5. Once the service account is created, click **Actions** and select **Create Key**.
+6. Choose **JSON** for the key format, then click **Create** to download the key file.
+
+Place this JSON file in the specified path, as mentioned in the `.env` file.
 
 ---
 
-## 3. Menjalankan Aplikasi
+## 3. Running the Application
 
-Setelah Anda menyiapkan semuanya, Anda dapat menjalankan aplikasi dengan perintah berikut:
+Once everything is set up, you can run the application with the following command:
 
 ```bash
 npm run start
 ```
 
-Aplikasi akan berjalan pada **`http://localhost:3000`** jika Anda menggunakan pengaturan default.
+The application will run at **`http://localhost:3000`** if you use the default settings.
 
 ---
 
 ## 4. Testing Endpoints
 
-Setelah aplikasi berjalan, Anda dapat mencoba beberapa endpoint menggunakan tools seperti [Postman](https://www.postman.com/) atau **curl**. Pastikan untuk menyertakan token JWT di header `Authorization` saat melakukan permintaan yang memerlukan autentikasi.
+After the application is running, you can test various endpoints using tools like [Postman Hayak.AI](https://documenter.getpostman.com/view/16134310/2sAY52eKzg) or **curl**. Make sure to include the JWT token in the `Authorization` header when making requests that require authentication.
 
 ---
 
 ## 5. Troubleshooting
 
-Jika Anda mengalami kesalahan atau masalah lainnya, berikut adalah beberapa langkah untuk memecahkan masalah:
+If you encounter any errors or other issues, here are some steps to troubleshoot:
 
-1. Periksa kembali konfigurasi file `.env` dan pastikan semua informasi sudah benar.
-2. Pastikan koneksi ke database sudah benar dan berjalan.
-3. Periksa log aplikasi untuk melihat jika ada error yang tercatat di konsol.
+1. Double-check the `.env` file configuration to ensure all information is correct.
+2. Ensure the database connection is correct and running.
+3. Check the application logs for any errors recorded in the console.
 
 ---
 
-**Semoga panduan ini membantu Anda untuk memulai dengan aplikasi ini! Jika ada pertanyaan lebih lanjut, jangan ragu untuk membuka issue di repository ini atau menghubungi pengembang.**
+ERD: [ERD Hayak.ai](https://dbdiagram.io/d/hayakdb-6729a38ee9daa85aca53543d)
 
---- 
+**We hope this guide helps you get started with this application! If you have further questions, don't hesitate to open an issue in this repository or contact the developers.**
+
+---
 
